@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+    <!-- Allow fullscreen app install in Android and IOS respectively -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <title>Phaser 3 - Template</title>
+
+    <!-- Import external stylesheets -->
+    <link type="text/css" href="css/main.css" rel="stylesheet" />
+
+    <script src="game.bundle.js"></script>
+    <script src="js/stats.min.js"></script>
+
+    <script>
+
+        const initGameParams = {
+
+        };
+        
+        window.addEventListener('gameStarterReady', function (e) {
+            console.log('gameStarterReady event: ', e);
+            const startGameMethod = e.detail.startGameMethod;
+            // set open planets array
+            //gameParams.openPlanets = <your load method>;
+            startGameMethod(initGameParams);
+        }.bind(this));
+
+        window.addEventListener('gameEvent', function (e) {
+            // some game event
+            switch (e.detail.eventName) {
+                case 'openPlanet':
+                    console.log(`Event: openPlanet; planetId: ${e.detail.planetId};`);
+                    // save the new open planet
+                    // <your save method>(e.detail.planetId);
+                    break;
+
+                case 'closeClick':
+                    // close the game
+                    console.log('onCloseClicked...');
+                    // <your close method>
+                    break;
+                
+                default:
+                    break;
+            }
+        }.bind(this));
+
+    </script>
+
+</head>
+
+<body>
+
+    <!-- Font Loading -->
+    <div style="font-family:DynaPuff; position:absolute; left:-1000px; visibility:hidden;">Test Text 12345.</div>
+
+    <div id="game"></div>
+
+    <noscript>
+        <p>You need javascript enabled in order to use this web application.</p>
+    </noscript>
+
+</body>
+
+</html>
