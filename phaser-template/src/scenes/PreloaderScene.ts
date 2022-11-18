@@ -1,7 +1,5 @@
 import { Config } from "../data/Config";
-import { Params } from "../data/Params";
 import { PreloaderBar } from "../gui/preloader/PreloaderBar";
-import { ScaleManager } from '../utils/ScaleManager';
     
 enum Texts {
     Title = 'Loading complete',

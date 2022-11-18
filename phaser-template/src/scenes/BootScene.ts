@@ -1,4 +1,3 @@
-import { Config } from '../data/Config';
 import { Params } from '../data/Params';
 import { LogMng } from '../utils/LogMng';
 import * as MyUtils from '../utils/MyUtils';
@@ -18,25 +17,25 @@ export class BootScene extends Phaser.Scene {
     }
 
     private readGETParams() {
-        const names = ['1', '2', '3'];
+        
+        const LIST = [
+            {
+                // anti aliasing
+                keys: ['aa'],
+                onReadHandler: (aValue: string) => {
+                    LogMng.debug(`GET key "aa" = ${aValue}`);
+                }
+            }
+        ];
 
-        for (let i = 0; i < names.length; i++) {
-            const n = names[i];
-            let val = MyUtils.getQueryValue(n);
-            if (val != null && val != undefined) {
-                switch (i) {
-                    case 0: // 1
-
-                        break;
-
-                    case 1: // 2
-                        
-                        break;
-
-                    case 2: // 3
-                        
-                        break;
-
+        for (let i = 0; i < LIST.length; i++) {
+            const listItem = LIST[i];
+            const keys = listItem.keys;
+            for (let j = 0; j < keys.length; j++) {
+                const getName = keys[j];
+                let qValue = MyUtils.getQueryValue(getName);
+                if (qValue != null && qValue != undefined) {
+                    listItem.onReadHandler(qValue);
                 }
             }
         }

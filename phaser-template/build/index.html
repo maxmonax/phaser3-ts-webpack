@@ -23,14 +23,12 @@
     <script>
 
         const initGameParams = {
-
+            // you can put some game settins here
         };
         
         window.addEventListener('gameStarterReady', function (e) {
             console.log('gameStarterReady event: ', e);
             const startGameMethod = e.detail.startGameMethod;
-            // set open planets array
-            //gameParams.openPlanets = <your load method>;
             startGameMethod(initGameParams);
         }.bind(this));
 

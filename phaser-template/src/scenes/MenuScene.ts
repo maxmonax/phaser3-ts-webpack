@@ -1,8 +1,5 @@
 import { Config } from "../data/Config";
-import { Params } from "../data/Params";
 import { GameEvents } from "../events/GameEvents";
-import { LogMng } from "../utils/LogMng";
-import { MyMath } from "../utils/MyMath";
 
 export class MenuScene extends Phaser.Scene {
 

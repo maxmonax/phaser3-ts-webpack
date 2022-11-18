@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/dat.gui": "^0.7.5",
     "@types/stats": "^0.16.30",
+    "@types/ua-parser-js": "^0.7.36",
     "dat.gui": "^0.7.6",
     "stats-js": "^1.0.1",
     "ts-loader": "^6.2.1",
@@ -23,7 +24,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "@types/ua-parser-js": "^0.7.36",
     "phaser": "^3.55.2",
     "ua-parser-js": "^1.0.2"
   }
