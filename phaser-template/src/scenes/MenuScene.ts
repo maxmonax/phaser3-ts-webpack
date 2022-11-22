@@ -1,11 +1,15 @@
 import { Config } from "../data/Config";
+import { Params } from "../data/Params";
+import { FrontEvents } from "../events/FrontEvents";
 import { GameEvents } from "../events/GameEvents";
+import { LogMng } from "../utils/LogMng";
 
 export class MenuScene extends Phaser.Scene {
 
     private dummyMain: Phaser.GameObjects.Container;
 
     // GUI
+    private btnPlay: Phaser.GameObjects.Image;
     private btnClose: Phaser.GameObjects.Image;
     private blackCurtain: Phaser.GameObjects.Graphics;
 
@@ -13,9 +17,6 @@ export class MenuScene extends Phaser.Scene {
     private isPointerDown = false;
     
     private music: Phaser.Sound.BaseSound;
-
-    // resize logic
-    private inner_gw = 0;
 
 
     constructor() {
@@ -35,8 +36,24 @@ export class MenuScene extends Phaser.Scene {
     public create(): void {
         this.dummyMain = this.add.container(0, 0);
 
-        let bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'back1');
+        let bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'bg');
+        bg.scaleX = Config.GW / bg.width;
         this.dummyMain.add(bg);
+
+        this.btnPlay = new Phaser.GameObjects.Image(this, Config.GW / 2, Config.GH / 2, 'game', 'btnPlay');
+        this.btnPlay.setInteractive({ cursor: 'pointer' });
+        this.btnPlay.on('pointerdown', () => {
+            this.btnPlay['isPointerDown'] = true;
+            this.sound.play('btn');
+            LogMng.debug(`btnPlay pointerdown!`);
+        });
+        this.btnPlay.on('pointerup', () => {
+            if (this.btnPlay['isPointerDown'] != true) return;
+            this.btnPlay['isPointerDown'] = false;
+            LogMng.debug(`btnPlay click!`);
+            this.scene.start('GameScene');
+        });
+        this.add.existing(this.btnPlay);
 
         this.btnClose = new Phaser.GameObjects.Image(this, 0, 80, 'game', 'btnClose');
         this.btnClose.setInteractive({ cursor: 'pointer' });
@@ -67,26 +84,14 @@ export class MenuScene extends Phaser.Scene {
 
         this.events.once('shutdown', this.shutdown, this);
 
-        this.scale.on('resize', this.onResize, this);
+        // this.scale.on('resize', this.onResize, this);
+        
+        FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
         this.onResize();
     }
 
-    private onResize(gameSize?, baseSize?, displaySize?, resolution?) {
-        const gw = Config.GW;
-        const gh = Config.GH;
-        const ww = window.innerWidth;
-        const wh = window.innerHeight;
-        const scale = wh / gh;
-        this.inner_gw = Math.min(gw, ww / scale);
-        // console.log(`size:`, {
-        //     ww: ww,
-        //     wh: wh,
-        //     scale: scale,
-        //     inner_gw: this.inner_gw
-        // });
-
+    private onResize() {
         this.updateBtnClosePos();
-
     }
 
     private hideBlackCurtain(cb?: Function, ctx?: any) {
@@ -118,7 +123,7 @@ export class MenuScene extends Phaser.Scene {
 
     private updateBtnClosePos() {
         if (this.btnClose) {
-            this.btnClose.x = (Config.GW - this.inner_gw) / 2 + 80;
+            this.btnClose.x = (Config.GW - Params.gameWidth) / 2 + 80;
         }
     }
 
@@ -169,8 +174,9 @@ export class MenuScene extends Phaser.Scene {
 
     }
 
-    update(allTime: number, dt: number) {
-        
+    update(allTime: number, dtMs: number) {
+        // get dt in Sec
+        let dt = dtMs * 0.001;
     }
 
 }

@@ -4,11 +4,53 @@
 			"image": "game.png",
 			"format": "RGBA8888",
 			"size": {
-				"w": 166,
-				"h": 847
+				"w": 464,
+				"h": 765
 			},
 			"scale": 1,
 			"frames": [
+				{
+					"filename": "btnPlay",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 462,
+						"h": 462
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 462,
+						"h": 462
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 462,
+						"h": 462
+					}
+				},
+				{
+					"filename": "hand",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 164,
+						"h": 93
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 164,
+						"h": 93
+					},
+					"frame": {
+						"x": 1,
+						"y": 465,
+						"w": 164,
+						"h": 93
+					}
+				},
 				{
 					"filename": "btnRestart",
 					"rotated": false,
@@ -24,8 +66,8 @@
 						"h": 166
 					},
 					"frame": {
-						"x": 1,
-						"y": 1,
+						"x": 167,
+						"y": 465,
 						"w": 160,
 						"h": 166
 					}
@@ -46,7 +88,7 @@
 					},
 					"frame": {
 						"x": 1,
-						"y": 169,
+						"y": 560,
 						"w": 131,
 						"h": 131
 					}
@@ -66,8 +108,8 @@
 						"h": 131
 					},
 					"frame": {
-						"x": 1,
-						"y": 302,
+						"x": 329,
+						"y": 465,
 						"w": 131,
 						"h": 131
 					}
@@ -87,8 +129,8 @@
 						"h": 131
 					},
 					"frame": {
-						"x": 1,
-						"y": 435,
+						"x": 329,
+						"y": 598,
 						"w": 131,
 						"h": 131
 					}
@@ -108,31 +150,10 @@
 						"h": 131
 					},
 					"frame": {
-						"x": 1,
-						"y": 568,
+						"x": 134,
+						"y": 633,
 						"w": 131,
 						"h": 131
-					}
-				},
-				{
-					"filename": "hand",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 164,
-						"h": 93
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 164,
-						"h": 93
-					},
-					"frame": {
-						"x": 1,
-						"y": 701,
-						"w": 164,
-						"h": 93
 					}
 				},
 				{
@@ -150,8 +171,8 @@
 						"h": 50
 					},
 					"frame": {
-						"x": 1,
-						"y": 796,
+						"x": 267,
+						"y": 633,
 						"w": 50,
 						"h": 50
 					}
@@ -162,6 +183,6 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "3.0",
-		"smartupdate": "$TexturePacker:SmartUpdate:8a1b3c162ec6f62d92525aefeb727ea7:bbf8ccc1f54f189b45c856b0766b5faa:fc2835210f98bae8e8c1b7f0a84c9321$"
+		"smartupdate": "$TexturePacker:SmartUpdate:eff605659c14933dd8ebc5e4266325ef:de12e66f8adf4eec1f88ce656e7826b4:fc2835210f98bae8e8c1b7f0a84c9321$"
 	}
 }

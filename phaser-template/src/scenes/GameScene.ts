@@ -1,5 +1,6 @@
 import { Config } from "../data/Config";
 import { Params } from "../data/Params";
+import { FrontEvents } from "../events/FrontEvents";
 import { LogMng } from "../utils/LogMng";
 
 export class GameScene extends Phaser.Scene {
@@ -7,10 +8,6 @@ export class GameScene extends Phaser.Scene {
     // GUI
     private btnBack: Phaser.GameObjects.Image;
     private blackCurtain: Phaser.GameObjects.Graphics;
-
-    // for resize
-    private inner_gw = 0;
-
 
 
     constructor() {
@@ -22,30 +19,31 @@ export class GameScene extends Phaser.Scene {
     }
 
     public preload(): void {
-
         this.load.audio('btn', ['./assets/audio/btn.mp3']);
-
-        this.scale.on('resize', this.onResize, this);
-        this.onResize();
-
     }
 
     public create(): void {
 
-        let bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'back1');
+        let bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'bg');
         this.add.existing(bg);
 
         this.btnBack = new Phaser.GameObjects.Image(this, 0, 80, 'game', 'btnBack');
         this.btnBack.setInteractive({ cursor: 'pointer' });
+        this.btnBack.on('pointerdown', () => {
+            this.sound.play('btn');
+        });
+        this.btnBack.on('pointerup', () => {
+            this.onBackClick();
+        });
         this.updateBtnBackPos();
         this.add.existing(this.btnBack);
 
-        let scoreText = new Phaser.GameObjects.Text(this, 0, 160, 'Game Screen, custom google font', {
+        let scoreText = new Phaser.GameObjects.Text(this, Config.GW / 2, 200, 'Game Screen\nCustom google font', {
             fontFamily: 'DynaPuff',
             color: '#4d81e8',
             align: 'center'
         });
-        scoreText.setFontSize(260);
+        scoreText.setFontSize(80);
         scoreText.setOrigin(0.5, 0.5);
         this.add.existing(scoreText);
 
@@ -56,34 +54,20 @@ export class GameScene extends Phaser.Scene {
 
         this.input.on('pointerdown', this.onPointerDown, this);
         this.input.on('pointermove', this.onPointerMove, this);
-        this.input.on('pointerup', this.onPointerUp, this);
+        // this.input.on('pointerup', this.onPointerUp, this);
 
         this.input.on('dragstart', this.onDragStart, this);
         this.input.on('drag', this.onDrag, this);
         this.input.on('dragend', this.onDragEnd, this);
         
-        
+        // this.scale.on('resize', this.onResize, this);
+        FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
+        this.onResize();
 
     }
 
-    private onResize(gameSize?, baseSize?, displaySize?, resolution?) {
-        const gw = Config.GW;
-        const gh = Config.GH;
-        const ww = window.innerWidth;
-        const wh = window.innerHeight;
-        const scale = wh / gh;
-        this.inner_gw = Math.min(gw, ww / scale);
-
+    private onResize() {
         this.updateBtnBackPos();
-        // if (this.gameMng) this.gameMng.onResize(this.inner_gw);
-
-        // debug
-        // console.log(`size:`, {
-        //     ww: ww,
-        //     wh: wh,
-        //     scale: scale,
-        //     inner_gw: this.inner_gw
-        // });
     }
 
     private hideBlackCurtain(cb?: Function, ctx?: any) {
@@ -115,7 +99,7 @@ export class GameScene extends Phaser.Scene {
 
     private updateBtnBackPos() {
         if (this.btnBack) {
-            this.btnBack.x = (Config.GW - this.inner_gw) / 2 + 90;
+            this.btnBack.x = (Config.GW - Params.gameWidth) / 2 + 90;
         }
     }
 
@@ -123,15 +107,6 @@ export class GameScene extends Phaser.Scene {
         if (aObj[0] == this.btnBack) {
             this.sound.play('btn');
             this.btnBack['isMouseDown'] = true;
-        }
-    }
-
-    private onPointerUp(p, aObj) {
-        if (this.btnBack) {
-            if (aObj[0] == this.btnBack && this.btnBack['isMouseDown']) {
-                this.onBackClick();
-            }
-            this.btnBack['isMouseDown'] = false;
         }
     }
 
@@ -157,11 +132,6 @@ export class GameScene extends Phaser.Scene {
         this.showBlackCurtain(() => {
             this.scene.start('MenuScene');
         });
-    }
-
-    private getStarPosX(): number {
-        const gw = Config.GW;
-        return gw - (gw - this.inner_gw) / 2 - 100;
     }
     
     update(allTime: number, dtMs: number) {

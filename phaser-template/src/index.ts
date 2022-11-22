@@ -4,6 +4,9 @@ import { Params } from "./data/Params";
 import { BootScene } from "./scenes/BootScene";
 import { GameScene } from "./scenes/GameScene";
 import { PreloaderScene } from "./scenes/PreloaderScene";
+import { MenuScene } from "./scenes/MenuScene";
+import { GameInitParams } from "./data/Types";
+import { FrontEvents } from "./events/FrontEvents";
 // @ts-ignore
 // import "phaser/plugins/spine/dist/SpinePlugin";
 // @ts-ignore
@@ -12,15 +15,10 @@ import { PreloaderScene } from "./scenes/PreloaderScene";
 // import { SpineGameObject } from 'phaser/types/SpineGameObject';
 // @ts-ignore
 // import { SpinePlugin } from 'phaser/types/SpinePlugin';
-import { MenuScene } from "./scenes/MenuScene";
-import { GameEvents } from "./events/GameEvents";
-import { GameInitParams } from "./data/Types";
 
 function startGame(aGameParams: GameInitParams) {
 
-    // resize event
-    GameEvents.getInstance().on(GameEvents.ON_WINDOW_RESIZE, onWindowResize);
-    onWindowResize();
+    windowResizeCalculate();
 
     new Phaser.Game({
         type: Phaser.AUTO,
@@ -42,7 +40,7 @@ function startGame(aGameParams: GameInitParams) {
 
 }
 
-function onWindowResize() {
+function windowResizeCalculate() {
     const gw = Config.GW;
     const gh = Config.GH;
     const ww = window.innerWidth;
@@ -57,5 +55,6 @@ window.addEventListener('load', () => {
 }, false);
 
 window.addEventListener('resize', () => {
-    GameEvents.getInstance().emit(GameEvents.ON_WINDOW_RESIZE);
+    windowResizeCalculate();
+    FrontEvents.getInstance().emit(FrontEvents.EVENT_WINDOW_RESIZE);
 }, false);

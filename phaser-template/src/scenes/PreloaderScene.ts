@@ -33,7 +33,7 @@ export class PreloaderScene extends Phaser.Scene {
 
         // images
         this.load.setPath('./assets/images/');
-        this.load.image('back1', 'back1.png');
+        this.load.image('bg', 'bg.png');
         
         // events
         this.load.on('progress', function (value) {
@@ -75,7 +75,7 @@ export class PreloaderScene extends Phaser.Scene {
             this.input.once('pointerdown', () => {
                 this.scene.start('MenuScene');
             });
-            
+
         }
         else {
             this.scene.start('MenuScene');
