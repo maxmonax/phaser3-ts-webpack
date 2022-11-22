@@ -75,6 +75,7 @@ export class PreloaderScene extends Phaser.Scene {
             this.input.once('pointerdown', () => {
                 this.scene.start('MenuScene');
             });
+            
         }
         else {
             this.scene.start('MenuScene');

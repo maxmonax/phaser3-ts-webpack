@@ -6,12 +6,13 @@ export class BootScene extends Phaser.Scene {
 
     constructor() {
         super('BootScene');
-        let anc = window.location.hash.replace("#", "");
-        Params.isDebugMode = (anc === "debug");
+
+        // init debug mode
+        Params.isDebugMode = window.location.hash === '#debug';
 
         // LogMng settings
         if (!Params.isDebugMode) LogMng.setMode(LogMng.MODE_RELEASE);
-        LogMng.system('current log mode: ' + LogMng.getMode());
+        LogMng.system('log mode: ' + LogMng.getMode());
 
         this.readGETParams();
     }
@@ -20,10 +21,10 @@ export class BootScene extends Phaser.Scene {
         
         const LIST = [
             {
-                // anti aliasing
-                keys: ['aa'],
+                // test param
+                keys: ['testParam'],
                 onReadHandler: (aValue: string) => {
-                    LogMng.debug(`GET key "aa" = ${aValue}`);
+                    LogMng.debug(`GET key "testParam" = ${aValue}`);
                 }
             }
         ];

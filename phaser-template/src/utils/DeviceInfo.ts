@@ -6,15 +6,10 @@ export class DeviceInfo {
     // desktop or mobile
     private _desktop = false;
 
-    constructor() {
-        if (DeviceInfo.instance) throw new Error("Don't use InputMng.constructor(), it's SINGLETON, use getInstance() method");
-
-        let ua = new UAParser();
-        this.parserResult = ua.getResult();
-
+    private constructor() {
+        this.parserResult = new UAParser().getResult();
         let devTypes = ['console', 'mobile', 'tablet', 'smarttv', 'wearable', 'embedded'];
         this._desktop = devTypes.indexOf(this.parserResult.device.type) < 0;
-
     }
 
     static getInstance(): DeviceInfo {

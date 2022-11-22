@@ -1,5 +1,5 @@
 
-export const GAME_EVENT_SAVE_DATA = 'openPlanet';
+export const GAME_EVENT_SAVE_DATA = 'saveData';
 export const GAME_EVENT_CLOSE_CLICK = 'closeClick';
 
 export class GameEvents extends Phaser.Events.EventEmitter {
@@ -8,8 +8,7 @@ export class GameEvents extends Phaser.Events.EventEmitter {
     // event list
     static readonly ON_WINDOW_RESIZE = 'WND_RESIZE';
 
-    constructor() {
-        if (GameEvents.instance) throw new Error("Don't use EventDispatcher.constructor(), it's SINGLETON, use getInstance() method");
+    private constructor() {
         super();
     }
 
@@ -18,11 +17,10 @@ export class GameEvents extends Phaser.Events.EventEmitter {
         return GameEvents.instance;
     }
 
-    saveData(aPlanetId: number) {
+    saveData() {
         window.dispatchEvent(new CustomEvent('gameEvent', { 
             detail: {
-                eventName: GAME_EVENT_SAVE_DATA,
-                planetId: aPlanetId
+                eventName: GAME_EVENT_SAVE_DATA
             }
         }));
     }

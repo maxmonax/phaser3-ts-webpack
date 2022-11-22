@@ -22,24 +22,17 @@
 
     <script>
 
-        const initGameParams = {
-            // you can put some game settins here
-        };
-        
         window.addEventListener('gameStarterReady', function (e) {
             console.log('gameStarterReady event: ', e);
             const startGameMethod = e.detail.startGameMethod;
-            startGameMethod(initGameParams);
+            startGameMethod({
+                phaserParentId: 'game'
+            });
         }.bind(this));
 
         window.addEventListener('gameEvent', function (e) {
             // some game event
             switch (e.detail.eventName) {
-                case 'openPlanet':
-                    console.log(`Event: openPlanet; planetId: ${e.detail.planetId};`);
-                    // save the new open planet
-                    // <your save method>(e.detail.planetId);
-                    break;
 
                 case 'closeClick':
                     // close the game
@@ -49,6 +42,7 @@
                 
                 default:
                     break;
+
             }
         }.bind(this));
 

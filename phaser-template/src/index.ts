@@ -14,8 +14,10 @@ import { PreloaderScene } from "./scenes/PreloaderScene";
 // import { SpinePlugin } from 'phaser/types/SpinePlugin';
 import { MenuScene } from "./scenes/MenuScene";
 import { GameEvents } from "./events/GameEvents";
+import { GameInitParams } from "./data/Types";
 
-function startGame(aGameParams: any) {
+function startGame(aGameParams: GameInitParams) {
+
     // resize event
     GameEvents.getInstance().on(GameEvents.ON_WINDOW_RESIZE, onWindowResize);
     onWindowResize();
