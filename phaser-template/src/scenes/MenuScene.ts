@@ -21,19 +21,23 @@ export class MenuScene extends Phaser.Scene {
 
     constructor() {
         super('MenuScene');
+        LogMng.debug(`MenuScene -> constructor()...`);
     }
 
     public init(aData: any) {
-
+        LogMng.debug(`MenuScene -> init()...`);
     }
 
     public preload(): void {
+        LogMng.debug(`MenuScene -> preload()...`);
+
         this.load.audio('btn', ['./assets/audio/btn.mp3']);
         this.load.audio('music', ['./assets/audio/music.mp3']);
-
     }
 
     public create(): void {
+        LogMng.debug(`MenuScene -> create()...`);
+
         this.dummyMain = this.add.container(0, 0);
 
         let bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'bg');
@@ -50,14 +54,23 @@ export class MenuScene extends Phaser.Scene {
         this.btnPlay.on('pointerup', () => {
             if (this.btnPlay['isPointerDown'] != true) return;
             this.btnPlay['isPointerDown'] = false;
-            LogMng.debug(`btnPlay click!`);
-            this.scene.start('GameScene');
+            this.onPlayBtnClick();
         });
         this.add.existing(this.btnPlay);
 
         this.btnClose = new Phaser.GameObjects.Image(this, 0, 80, 'game', 'btnClose');
         this.btnClose.setInteractive({ cursor: 'pointer' });
         this.updateBtnClosePos();
+        this.btnClose.on('pointerdown', () => {
+            this.btnClose['isPointerDown'] = true;
+            this.sound.play('btn');
+            LogMng.debug(`btnClose pointerdown!`);
+        });
+        this.btnClose.on('pointerup', () => {
+            if (this.btnClose['isPointerDown'] != true) return;
+            this.btnClose['isPointerDown'] = false;
+            this.onCloseBtnClick();
+        });
         this.add.existing(this.btnClose);
 
         this.blackCurtain = this.add.graphics();
@@ -74,15 +87,7 @@ export class MenuScene extends Phaser.Scene {
         //     Params.music.volume = .2;
         // }
 
-        this.input.on('pointerdown', this.onPointerDown, this);
-        this.input.on('pointermove', this.onPointerMove, this);
-        this.input.on('pointerup', this.onPointerUp, this);
-        
-        this.input.on('dragstart', this.onDragStart, this);
-        this.input.on('drag', this.onDrag, this);
-        this.input.on('dragend', this.onDragEnd, this);
-
-        this.events.once('shutdown', this.shutdown, this);
+        this.events.once('shutdown', this.onSceneShutdown, this);
 
         // this.scale.on('resize', this.onResize, this);
         
@@ -127,51 +132,17 @@ export class MenuScene extends Phaser.Scene {
         }
     }
 
-    private onPointerDown(aPointer, aObj) {
-        this.isPointerDown = true;
-
-        if (aObj[0] == this.btnClose) {
-            this.sound.play('btn');
-            this.btnClose['isMouseDown'] = true;
-        }
-
+    private onPlayBtnClick() {
+        LogMng.debug(`btnPlay click!`);
+        this.scene.start('GameScene');
     }
 
-    private onPointerUp(aPointer, aObj) {
-        
-        if (this.btnClose) {
-            if (aObj[0] == this.btnClose && this.btnClose['isMouseDown']) {
-                this.onCloseClick();
-            }
-            this.btnClose['isMouseDown'] = false;
-        }
-
-        this.isPointerDown = false;
-
-    }
-
-    private onPointerMove(aPointer) {
-        if (!this.isPointerDown) return;
-    }
-
-    private onDragStart(aPointer, aObj) {
-
-    }
-
-    private onDrag(aPointer, aObj, dragX, dragY) {
-
-    }
-
-    private onDragEnd(aPointer, aObj) {
-
-    }
-
-    private onCloseClick() {
+    private onCloseBtnClick() {
         GameEvents.getInstance().closeClick();
     }
 
-    private shutdown() {
-
+    private onSceneShutdown() {
+        LogMng.debug(`MenuScene -> onSceneShutdown()...`);
     }
 
     update(allTime: number, dtMs: number) {

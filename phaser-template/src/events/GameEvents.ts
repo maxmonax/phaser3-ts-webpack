@@ -18,6 +18,9 @@ export class GameEvents extends Phaser.Events.EventEmitter {
         return GameEvents.instance;
     }
 
+    /**
+     * For Example Event
+     */
     saveData() {
         window.dispatchEvent(new CustomEvent('gameEvent', { 
             detail: {
