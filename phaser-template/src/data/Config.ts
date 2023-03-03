@@ -1,6 +1,7 @@
 ﻿
 export const Config = {
 
+    // 20:9
     GW: 2400,
     GH: 1080,
 
