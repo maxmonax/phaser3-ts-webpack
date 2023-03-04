@@ -15,7 +15,7 @@ import { FrontEvents } from "./events/FrontEvents";
 // import { SpineGameObject } from 'phaser/types/SpineGameObject';
 // @ts-ignore
 // import { SpinePlugin } from 'phaser/types/SpinePlugin';
-import "./_css/main.css";
+import "./css/main.css";
 
 function startGame(aGameParams: GameInitParams) {
 
