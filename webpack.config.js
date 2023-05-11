@@ -14,7 +14,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.tsx', '.ts', '.js', 'd.ts']
+        extensions: ['.tsx', '.ts', '.js', '.d.ts']
     },
 
     module: {
@@ -23,10 +23,6 @@ module.exports = {
                 test: /\.ts$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
-            },
-            {
-                test: /\.(glsl|vs|fs)$/,
-                loader: 'ts-shader-loader'
             },
             {
                 test: /\.css$/,
