@@ -13,26 +13,16 @@ export class MenuScene extends Phaser.Scene {
     private btnClose: Phaser.GameObjects.Image;
     private blackCurtain: Phaser.GameObjects.Graphics;
 
-    // flags
-    private isPointerDown = false;
-    
-    private music: Phaser.Sound.BaseSound;
-
 
     constructor() {
         super('MenuScene');
-        LogMng.debug(`MenuScene -> constructor()...`);
     }
 
     public init(aData: any) {
-        LogMng.debug(`MenuScene -> init()...`);
     }
 
     public preload(): void {
-        LogMng.debug(`MenuScene -> preload()...`);
-
-        this.load.audio('btn', ['./assets/audio/btn.mp3']);
-        this.load.audio('music', ['./assets/audio/music.mp3']);
+        
     }
 
     public create(): void {

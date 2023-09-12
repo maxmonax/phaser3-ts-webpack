@@ -34,13 +34,17 @@ export class PreloaderScene extends Phaser.Scene {
         // images
         this.load.setPath('./assets/images/');
         this.load.image('bg', 'bg.png');
+
+        // audio
+        this.load.setPath('./assets/audio/');
+        this.load.audio('btn', 'btn.mp3');
         
         // events
         this.load.on('progress', function (value) {
             if (Config.TAP_TO_START) this.bar.progress = value;
         }, this);
 
-        this.load.on('complete', function () {
+        this.load.on('complete', () => {
 
         }, this);
 

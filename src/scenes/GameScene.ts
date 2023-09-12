@@ -39,7 +39,7 @@ export class GameScene extends Phaser.Scene {
         this.add.existing(this.btnBack);
 
         let scoreText = new Phaser.GameObjects.Text(this, Config.GW / 2, 200, 'Game Screen\nCustom google font', {
-            fontFamily: 'DynaPuff',
+            fontFamily: 'Ubuntu',
             color: '#4d81e8',
             align: 'center'
         });
