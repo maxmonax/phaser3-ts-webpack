@@ -10,7 +10,6 @@ export class MenuScene extends Phaser.Scene {
 
     // GUI
     private btnPlay: Phaser.GameObjects.Image;
-    private btnClose: Phaser.GameObjects.Image;
     private blackCurtain: Phaser.GameObjects.Graphics;
 
 
@@ -47,21 +46,6 @@ export class MenuScene extends Phaser.Scene {
             this.onPlayBtnClick();
         });
         this.add.existing(this.btnPlay);
-
-        this.btnClose = new Phaser.GameObjects.Image(this, 0, 80, 'game', 'btnClose');
-        this.btnClose.setInteractive({ cursor: 'pointer' });
-        this.updateBtnClosePos();
-        this.btnClose.on('pointerdown', () => {
-            this.btnClose['isPointerDown'] = true;
-            this.sound.play('btn');
-            LogMng.debug(`btnClose pointerdown!`);
-        });
-        this.btnClose.on('pointerup', () => {
-            if (this.btnClose['isPointerDown'] != true) return;
-            this.btnClose['isPointerDown'] = false;
-            this.onCloseBtnClick();
-        });
-        this.add.existing(this.btnClose);
 
         this.blackCurtain = this.add.graphics();
         this.blackCurtain.fillStyle(0x111111);
@@ -117,9 +101,7 @@ export class MenuScene extends Phaser.Scene {
     }
 
     private updateBtnClosePos() {
-        if (this.btnClose) {
-            this.btnClose.x = (Config.GW - Params.gameWidth) / 2 + 80;
-        }
+        
     }
 
     private onPlayBtnClick() {

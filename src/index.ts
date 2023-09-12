@@ -52,7 +52,7 @@ function windowResizeCalculate() {
 function checkOrientation() {
     const rotClassName = 'rotate-image-container';
     const imgId = 'rotate__image';
-    const ar = 750 / 600;
+    const ar = 600 / 600;
     const ww = window.innerWidth;
     const wh = window.innerHeight;
 
