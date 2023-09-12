@@ -8,7 +8,7 @@ enum Texts {
 
 enum Styles {
     Color = '#AAAAAA',
-    Font = 'Arial'
+    Font = 'Ubuntu'
 }
 
 export class PreloaderScene extends Phaser.Scene {
@@ -77,13 +77,17 @@ export class PreloaderScene extends Phaser.Scene {
                 .setOrigin(0.5);
 
             this.input.once('pointerdown', () => {
-                this.scene.start('MenuScene');
+                this.starGame();
             });
 
         }
         else {
-            this.scene.start('MenuScene');
+            this.starGame();
         }
+    }
+
+    private starGame() {
+        this.scene.start('MenuScene');
     }
 
     public update() {
