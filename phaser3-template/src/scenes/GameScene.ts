@@ -19,7 +19,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     public preload(): void {
-        this.load.audio('btn', ['./assets/audio/btn.mp3']);
+        
     }
 
     public create(): void {

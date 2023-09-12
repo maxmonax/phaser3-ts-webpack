@@ -14,7 +14,7 @@ import { FrontEvents } from "./events/FrontEvents";
 // import { SpineGameObject } from 'phaser/types/SpineGameObject';
 // @ts-ignore
 // import { SpinePlugin } from 'phaser/types/SpinePlugin';
-import "./css/main.css";
+import "./_html/css/main.css";
 
 let isLand = true;
 
