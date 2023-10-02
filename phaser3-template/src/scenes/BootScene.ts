@@ -1,6 +1,6 @@
+import { MyUtils } from '@/utils/MyUtils';
 import { Params } from '../data/Params';
 import { LogMng } from '../utils/LogMng';
-import * as MyUtils from '../utils/MyUtils';
 
 export class BootScene extends Phaser.Scene {
 

@@ -1,3 +1,4 @@
+import { SOUND_LOAD_DATA } from "@/sound/SndMng";
 import { Config } from "../data/Config";
 import { PreloaderBar } from "../gui/preloader/PreloaderBar";
     
@@ -37,7 +38,10 @@ export class PreloaderScene extends Phaser.Scene {
 
         // audio
         this.load.setPath('./assets/audio/');
-        this.load.audio('btn', 'btn.mp3');
+        for (let i = 0; i < SOUND_LOAD_DATA.length; i++) {
+            const sndData = SOUND_LOAD_DATA[i];
+            this.load.audio(sndData.alias, sndData.file);
+        }
         
         // events
         this.load.on('progress', function (value) {

@@ -2,79 +2,63 @@
 import { MyMath } from "../utils/MyMath";
 
 // sounds
-export const SND_CLICK = 'SND_CLICK';
-export const SND_INTRO = 'SND_INTRO';
+export enum SoundAlias {
+  Click = 'Click',
+}
 
 // loading sounds
-export const LOAD_DATA = [
-  { alias: SND_INTRO, file: 'assets/audio/intro.mp3' },
+export const SOUND_LOAD_DATA = [
+  { alias: SoundAlias.Click, file: 'click.mp3' },
 ];
 
 export class SndMng {
 
   // local params
   private static readonly MUS_MAX_VOL = 1.0;
-
   private static musics: any[] = []; // of { name: str, mus: Phaser.Sound }
+  private static enabled = true;
 
   // global vars
   static scene: Phaser.Scene = null;
 
-  // local vars
-  private static enabled = true;
-
-	
-	static getMusic(aName: string): any  {
+  static getMusic(aName: string): any {
     for (var i = 0; i < SndMng.musics.length; i++) {
       var data = SndMng.musics[i];
-			if (data.name == aName)
-				return data.mus;
-		}
-		return null;
+      if (data.name == aName)
+        return data.mus;
+    }
+    return null;
   }
-  
+
   static getSoundFileByName(aAlias: string): string {
-    for (let i = 0; i < LOAD_DATA.length; i++) {
-      const element = LOAD_DATA[i];
+    for (let i = 0; i < SOUND_LOAD_DATA.length; i++) {
+      const element = SOUND_LOAD_DATA[i];
       if (element.alias == aAlias) return element.file;
     }
     return '';
   }
-  
-	static playMusic(aName: string, aVolFrom = 0, aVolEnd = 1, aDuration: number = 500) {
-    if (!SndMng.enabled) return;
-    if (aVolEnd > SndMng.MUS_MAX_VOL) aVolEnd = SndMng.MUS_MAX_VOL;
-		// create music
-    let music: any = SndMng.scene.sound.add(aName, {
-      volume: aVolFrom,
-      loop: true
-    });
-		music.play();
-    let twObj = { t: 0 };
-    SndMng.scene.tweens.add({
-      targets: twObj,
-      t: 1,
-      duration: aDuration,
-      ease: "Linear.None",
-      callbackScope: SndMng,
-      onUpdate: () => {
-        let vol = aVolFrom + (aVolEnd - aVolFrom) * twObj.t;
-        music.setVolume(vol);
-      },
-      onComplete: () => {
-      }
-    });
-		SndMng.musics.push({name: aName, mus: music});
-	}
 
-  static changeMusicVol(aName: string, aVol: number, aDuration: number = 500) {
+  static changeMusicVol(aName: string, aVol: number, aTweenScene: Phaser.Scene, aDuration = 500) {
     if (aVol > SndMng.MUS_MAX_VOL) aVol = SndMng.MUS_MAX_VOL;
-    for (let i = SndMng.musics.length - 1; i >= 0; i--) {
+    for (let i = 0; i < SndMng.musics.length; i++) {
       let data = SndMng.musics[i];
       if (data.name == aName) {
         let music: any = data.mus;
-        //let tw = game.add.tween(music).to({ volume: aVol }, aDuration, Phaser.Easing.Linear.None, true);
-
+        let twObj = { val: music.volume };
+        aTweenScene.tweens.add({
+          targets: twObj,
+          val: aVol,
+          // targets: music,
+          // volume: aVol,
+          duration: aDuration,
+          ease: Phaser.Math.Easing.Linear,
+          // callbackScope: SndMng,
+          onUpdate: (atr1) => {
+            // let vol = aVolFrom + (aVol - aVolFrom) * twObj.t;
+            // music.setVolume(twObj.val);
+            music.volume = twObj.val;
+          }
+        });
       }
     }
   }
@@ -105,37 +89,61 @@ export class SndMng {
       LogMng.error('SndMng.stopMusicById: ' + e);
     }
   }
-  
+
   static stopMusicByName(aName: string, aVol: number = 0, aDuration: number = 500) {
-		for (let i = SndMng.musics.length - 1; i >= 0; i--) {
+    for (let i = SndMng.musics.length - 1; i >= 0; i--) {
       let data = SndMng.musics[i];
       if (data.name == aName) {
         SndMng.stopMusicById(i, aVol, aDuration);
-			}
-		}
+      }
+    }
   }
-  
+
   static stopAllMusic(aVol: number = 0, aDuration: number = 500) {
     for (var i = SndMng.musics.length - 1; i >= 0; i--) {
       SndMng.stopMusicById(i);
-		}
-	}
-	
+    }
+  }
+
   static setEnabled(aEnabled: boolean) {
     SndMng.enabled = aEnabled;
     if (SndMng.enabled) {
-			//fadeInMusic();
-		}
-		else {
+      //fadeInMusic();
+    }
+    else {
       SndMng.stopAllMusic();
-		}
-	}
+    }
+  }
 
   static getEnabled(): boolean {
     return SndMng.enabled;
-	}
+  }
 
-  static sfxPlay(aName: string, aVol = 1, aDelay = 0): any {
+  static playMusic(aName: string, aVolFrom = 0, aVolEnd = 1, aDuration: number = 500) {
+    if (!SndMng.enabled) return;
+    if (aVolEnd > SndMng.MUS_MAX_VOL) aVolEnd = SndMng.MUS_MAX_VOL;
+    // create music
+    let music: any = SndMng.scene.sound.add(aName, {
+      volume: aVolFrom,
+      loop: true
+    });
+    music.play();
+    let twObj = { t: 0 };
+    SndMng.scene.tweens.add({
+      targets: twObj,
+      t: 1,
+      duration: aDuration,
+      ease: Phaser.Math.Easing.Linear,
+      callbackScope: SndMng,
+      onUpdate: () => {
+        let vol = aVolFrom + (aVolEnd - aVolFrom) * twObj.t;
+        music.setVolume(vol);
+      }
+    });
+    SndMng.musics.push({ name: aName, mus: music });
+  }
+
+  static playSfx(aName: string, aVol = 1, aDelay = 0): any {
     if (!SndMng.enabled) return;
     var snd = SndMng.scene.sound.add(aName, {
       volume: aVol
@@ -148,7 +156,7 @@ export class SndMng {
     else {
       snd.play();
     }
-		return snd;
+    return snd;
   }
 
   static playRandomSfx(aNames: string[], aVol = 1): any {
@@ -159,12 +167,8 @@ export class SndMng {
     return null;
   }
 
-  static getPageSoundAlias(aPageId: number): string {
-    return 'page_audio_' + aPageId;
-  }
-  
   static update(dt: number) {
-    
+
   }
 
 }
