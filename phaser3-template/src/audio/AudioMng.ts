@@ -2,16 +2,16 @@
 import { MyMath } from "../utils/MyMath";
 
 // sounds
-export enum SoundAlias {
+export enum AudioAlias {
   Click = 'Click',
 }
 
 // loading sounds
-export const SOUND_LOAD_DATA = [
-  { alias: SoundAlias.Click, file: 'click.mp3' },
+export const AUDIO_LOAD_DATA = [
+  { alias: AudioAlias.Click, file: 'click.mp3' },
 ];
 
-export class SndMng {
+export class AudioMng {
 
   // local params
   private static readonly MUS_MAX_VOL = 1.0;
@@ -22,8 +22,8 @@ export class SndMng {
   static scene: Phaser.Scene = null;
 
   static getMusic(aName: string): any {
-    for (var i = 0; i < SndMng.musics.length; i++) {
-      var data = SndMng.musics[i];
+    for (var i = 0; i < AudioMng.musics.length; i++) {
+      var data = AudioMng.musics[i];
       if (data.name == aName)
         return data.mus;
     }
@@ -31,17 +31,17 @@ export class SndMng {
   }
 
   static getSoundFileByName(aAlias: string): string {
-    for (let i = 0; i < SOUND_LOAD_DATA.length; i++) {
-      const element = SOUND_LOAD_DATA[i];
+    for (let i = 0; i < AUDIO_LOAD_DATA.length; i++) {
+      const element = AUDIO_LOAD_DATA[i];
       if (element.alias == aAlias) return element.file;
     }
     return '';
   }
 
   static changeMusicVol(aName: string, aVol: number, aTweenScene: Phaser.Scene, aDuration = 500) {
-    if (aVol > SndMng.MUS_MAX_VOL) aVol = SndMng.MUS_MAX_VOL;
-    for (let i = 0; i < SndMng.musics.length; i++) {
-      let data = SndMng.musics[i];
+    if (aVol > AudioMng.MUS_MAX_VOL) aVol = AudioMng.MUS_MAX_VOL;
+    for (let i = 0; i < AudioMng.musics.length; i++) {
+      let data = AudioMng.musics[i];
       if (data.name == aName) {
         let music: any = data.mus;
         let twObj = { val: music.volume };
@@ -65,12 +65,12 @@ export class SndMng {
 
   static stopMusicById(id: number, aVol: number = 0, aDuration: number = 500) {
     try {
-      let data = SndMng.musics[id];
+      let data = AudioMng.musics[id];
       let music = data.mus;
       let volFrom = music.volume;
 
       let twObj = { t: 1 };
-      SndMng.scene.tweens.add({
+      AudioMng.scene.tweens.add({
         targets: twObj,
         t: 0,
         duration: aDuration,
@@ -82,7 +82,7 @@ export class SndMng {
         },
         onComplete: () => {
           music.stop();
-          SndMng.musics.splice(id, 1);
+          AudioMng.musics.splice(id, 1);
         }
       });
     } catch (e) {
@@ -91,61 +91,61 @@ export class SndMng {
   }
 
   static stopMusicByName(aName: string, aVol: number = 0, aDuration: number = 500) {
-    for (let i = SndMng.musics.length - 1; i >= 0; i--) {
-      let data = SndMng.musics[i];
+    for (let i = AudioMng.musics.length - 1; i >= 0; i--) {
+      let data = AudioMng.musics[i];
       if (data.name == aName) {
-        SndMng.stopMusicById(i, aVol, aDuration);
+        AudioMng.stopMusicById(i, aVol, aDuration);
       }
     }
   }
 
   static stopAllMusic(aVol: number = 0, aDuration: number = 500) {
-    for (var i = SndMng.musics.length - 1; i >= 0; i--) {
-      SndMng.stopMusicById(i);
+    for (var i = AudioMng.musics.length - 1; i >= 0; i--) {
+      AudioMng.stopMusicById(i);
     }
   }
 
   static setEnabled(aEnabled: boolean) {
-    SndMng.enabled = aEnabled;
-    if (SndMng.enabled) {
+    AudioMng.enabled = aEnabled;
+    if (AudioMng.enabled) {
       //fadeInMusic();
     }
     else {
-      SndMng.stopAllMusic();
+      AudioMng.stopAllMusic();
     }
   }
 
   static getEnabled(): boolean {
-    return SndMng.enabled;
+    return AudioMng.enabled;
   }
 
   static playMusic(aName: string, aVolFrom = 0, aVolEnd = 1, aDuration: number = 500) {
-    if (!SndMng.enabled) return;
-    if (aVolEnd > SndMng.MUS_MAX_VOL) aVolEnd = SndMng.MUS_MAX_VOL;
+    if (!AudioMng.enabled) return;
+    if (aVolEnd > AudioMng.MUS_MAX_VOL) aVolEnd = AudioMng.MUS_MAX_VOL;
     // create music
-    let music: any = SndMng.scene.sound.add(aName, {
+    let music: any = AudioMng.scene.sound.add(aName, {
       volume: aVolFrom,
       loop: true
     });
     music.play();
     let twObj = { t: 0 };
-    SndMng.scene.tweens.add({
+    AudioMng.scene.tweens.add({
       targets: twObj,
       t: 1,
       duration: aDuration,
       ease: Phaser.Math.Easing.Linear,
-      callbackScope: SndMng,
+      callbackScope: AudioMng,
       onUpdate: () => {
         let vol = aVolFrom + (aVolEnd - aVolFrom) * twObj.t;
         music.setVolume(vol);
       }
     });
-    SndMng.musics.push({ name: aName, mus: music });
+    AudioMng.musics.push({ name: aName, mus: music });
   }
 
   static playSfx(aName: string, aVol = 1, aDelay = 0): any {
-    if (!SndMng.enabled) return;
-    var snd = SndMng.scene.sound.add(aName, {
+    if (!AudioMng.enabled) return;
+    var snd = AudioMng.scene.sound.add(aName, {
       volume: aVol
     });
     if (aDelay > 0) {
@@ -160,7 +160,7 @@ export class SndMng {
   }
 
   static playRandomSfx(aNames: string[], aVol = 1): any {
-    if (!SndMng.enabled) return;
+    if (!AudioMng.enabled) return;
     let name = aNames[MyMath.randomIntInRange(0, aNames.length - 1)];
     // let snd = game.add.audio(name, aVol);
     // snd.play();

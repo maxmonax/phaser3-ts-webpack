@@ -1,11 +1,12 @@
 import { MyUtils } from '@/utils/MyUtils';
 import { Params } from '../data/Params';
 import { LogMng } from '../utils/LogMng';
+import { SceneNames } from './SceneNames';
 
 export class BootScene extends Phaser.Scene {
 
     constructor() {
-        super('BootScene');
+        super(SceneNames.BootScene);
 
         // init debug mode
         Params.isDebugMode = window.location.hash === '#debug';
@@ -49,7 +50,7 @@ export class BootScene extends Phaser.Scene {
     }
 
     public create(): void {
-        this.scene.start('PreloaderScene');
+        this.scene.start(SceneNames.PreloaderScene);
     }
 
 }

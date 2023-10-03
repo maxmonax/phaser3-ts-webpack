@@ -1,31 +1,36 @@
+import { AudioMng, AudioAlias } from "@/audio/AudioMng";
 import { Config } from "../data/Config";
-import { Params } from "../data/Params";
 import { FrontEvents } from "../events/FrontEvents";
 import { GameEvents } from "../events/GameEvents";
-import { LogMng } from "../utils/LogMng";
+import { CurtainScene } from "./CurtainScene";
+import { SceneNames } from "./SceneNames";
 
-export class MenuScene extends Phaser.Scene {
+export class MenuScene extends CurtainScene {
 
     private dummyMain: Phaser.GameObjects.Container;
-
     // GUI
     private btnPlay: Phaser.GameObjects.Image;
-    private blackCurtain: Phaser.GameObjects.Graphics;
-
 
     constructor() {
-        super('MenuScene');
+        super(SceneNames.MenuScene);
     }
 
-    public init(aData: any) {
-    }
+    public init(aData: any) { }
 
-    public preload(): void {
-        
-    }
+    public preload(): void { }
 
     public create(): void {
-        LogMng.debug(`MenuScene -> create()...`);
+
+        AudioMng.scene = this;
+
+        // music example
+        // if (!Params.music) {
+        //     Params.music = this.sound.add('music', { loop: true, volume: .2 });
+        //     Params.music.play();
+        // }
+        // else {
+        //     Params.music.volume = .2;
+        // }
 
         this.dummyMain = this.add.container(0, 0);
 
@@ -37,8 +42,7 @@ export class MenuScene extends Phaser.Scene {
         this.btnPlay.setInteractive({ cursor: 'pointer' });
         this.btnPlay.on('pointerdown', () => {
             this.btnPlay['isPointerDown'] = true;
-            this.sound.play('btn');
-            LogMng.debug(`btnPlay pointerdown!`);
+            AudioMng.playSfx(AudioAlias.Click);
         });
         this.btnPlay.on('pointerup', () => {
             if (this.btnPlay['isPointerDown'] != true) return;
@@ -46,58 +50,17 @@ export class MenuScene extends Phaser.Scene {
             this.onPlayBtnClick();
         });
         this.add.existing(this.btnPlay);
-
-        this.blackCurtain = this.add.graphics();
-        this.blackCurtain.fillStyle(0x111111);
-        this.blackCurtain.fillRect(0, 0, Config.GW, Config.GH);
-        this.hideBlackCurtain();
         
-        // music
-        // if (!Params.music) {
-        //     Params.music = this.sound.add('music', { loop: true, volume: .2 });
-        //     Params.music.play();
-        // }
-        // else {
-        //     Params.music.volume = .2;
-        // }
-
         this.events.once('shutdown', this.onSceneShutdown, this);
-
-        // this.scale.on('resize', this.onResize, this);
         
         FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
         this.onResize();
+
+        super.create();
     }
 
     private onResize() {
         this.updateBtnClosePos();
-    }
-
-    private hideBlackCurtain(cb?: Function, ctx?: any) {
-        this.tweens.killTweensOf(this.blackCurtain);
-        this.tweens.add({
-            targets: this.blackCurtain,
-            alpha: 0,
-            duration: 250,
-            onComplete: () => {
-                this.blackCurtain.visible = false;
-                if (cb) cb.call(ctx);
-            }
-        });
-    }
-
-    private showBlackCurtain(cb?: Function, ctx?: any) {
-        this.tweens.killTweensOf(this.blackCurtain);
-        this.blackCurtain.alpha = 0;
-        this.blackCurtain.visible = true;
-        this.tweens.add({
-            targets: this.blackCurtain,
-            alpha: 1,
-            duration: 250,
-            onComplete: () => {
-                if (cb) cb.call(ctx);
-            }
-        });
     }
 
     private updateBtnClosePos() {
@@ -105,16 +68,13 @@ export class MenuScene extends Phaser.Scene {
     }
 
     private onPlayBtnClick() {
-        LogMng.debug(`btnPlay click!`);
-        this.scene.start('GameScene');
-    }
-
-    private onCloseBtnClick() {
-        GameEvents.getInstance().closeClick();
+        this.showCurtain(() => {
+            this.scene.start('GameScene');
+        })
     }
 
     private onSceneShutdown() {
-        LogMng.debug(`MenuScene -> onSceneShutdown()...`);
+        this.logDebug(`onSceneShutdown()...`);
     }
 
     update(allTime: number, dtMs: number) {

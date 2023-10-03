@@ -1,6 +1,7 @@
-import { SOUND_LOAD_DATA } from "@/sound/SndMng";
+import { AUDIO_LOAD_DATA } from "@/audio/AudioMng";
 import { Config } from "../data/Config";
 import { PreloaderBar } from "../gui/preloader/PreloaderBar";
+import { SceneNames } from "./SceneNames";
     
 enum Texts {
     Title = 'Loading complete',
@@ -17,7 +18,7 @@ export class PreloaderScene extends Phaser.Scene {
     private bar: PreloaderBar;
 
     constructor() {
-        super('PreloaderScene');
+        super(SceneNames.PreloaderScene);
     }
 
     public preload(): void {
@@ -38,8 +39,8 @@ export class PreloaderScene extends Phaser.Scene {
 
         // audio
         this.load.setPath('./assets/audio/');
-        for (let i = 0; i < SOUND_LOAD_DATA.length; i++) {
-            const sndData = SOUND_LOAD_DATA[i];
+        for (let i = 0; i < AUDIO_LOAD_DATA.length; i++) {
+            const sndData = AUDIO_LOAD_DATA[i];
             this.load.audio(sndData.alias, sndData.file);
         }
         
@@ -91,7 +92,7 @@ export class PreloaderScene extends Phaser.Scene {
     }
 
     private starGame() {
-        this.scene.start('MenuScene');
+        this.scene.start(SceneNames.MenuScene);
     }
 
     public update() {
