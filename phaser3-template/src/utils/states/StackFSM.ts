@@ -1,4 +1,4 @@
-import { LogMng } from "../utils/LogMng";
+import { LogMng } from "../LogMng";
 
 type StateItem = {
     name: string;
