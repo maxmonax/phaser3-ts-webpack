@@ -9,24 +9,22 @@ enum Texts {
 }
 
 enum Styles {
-    Color = '#AAAAAA',
+    Color = '#ffffff',
     Font = 'Ubuntu'
 }
 
 export class PreloaderScene extends Phaser.Scene {
-    private bg: Phaser.GameObjects.Image;
-    private bar: PreloaderBar;
+    private _bar: PreloaderBar;
 
     constructor() {
         super(SceneNames.PreloaderScene);
     }
 
     public preload(): void {
-        // this.bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'preloader', 'bg');
 
-        if (Config.TAP_TO_START) {
-            this.bar = new PreloaderBar(this, Config.GW_HALF, Config.GH_HALF + 200, true);
-            this.add.existing(this.bar);
+        if (Config.PRELOADER.BAR) {
+            this._bar = new PreloaderBar(this, Config.GW_HALF, Config.GH_HALF + 200, true);
+            this.add.existing(this._bar);
         }
 
         // atlases
@@ -45,12 +43,12 @@ export class PreloaderScene extends Phaser.Scene {
         }
         
         // events
-        this.load.on('progress', function (value) {
-            if (Config.TAP_TO_START) this.bar.progress = value;
+        this.load.on('progress', (value) => {
+            if (this._bar) this._bar.progress = value;
         }, this);
 
         this.load.on('complete', () => {
-
+            if (this._bar) this._bar.progress = 1;
         }, this);
 
     }
@@ -58,12 +56,12 @@ export class PreloaderScene extends Phaser.Scene {
     public create(): void {
         console.log('PreloaderScene create...');
 
-        if (Config.DRAW_DEBUG_BORDER) {
-            let rFullArea = this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW, Config.GH, 0x00FF00, 0.1);
-            let rSafeArea = this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW_SAFE, Config.GH_SAFE, 0x0000FF, 0.1);
+        if (Config.PRELOADER.DRAW_DEBUG_BORDER) {
+            let rFullArea = this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW, Config.GH, 0x0, 0.1);
+            let rSafeArea = this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW_SAFE, Config.GH_SAFE, 0x0, 0.1);
         }
 
-        if (Config.TAP_TO_START) {
+        if (Config.PRELOADER.TAP_TO_START) {
 
             this.add.text(Config.GW_HALF, Config.GH_HALF - 100,
                 Texts.Title,
@@ -94,10 +92,5 @@ export class PreloaderScene extends Phaser.Scene {
     private starGame() {
         this.scene.start(SceneNames.MenuScene);
     }
-
-    public update() {
-        
-    }
-
-
+    
 }

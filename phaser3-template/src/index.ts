@@ -15,8 +15,7 @@ import { FrontEvents } from "./events/FrontEvents";
 // @ts-ignore
 // import { SpinePlugin } from 'phaser/types/SpinePlugin';
 import "./_html/css/main.css";
-
-let isLand = true;
+import { OriAlertMng } from "./mng/OriAlertMng";
 
 function startGame(aGameParams: {
     parent: HTMLElement
@@ -49,47 +48,10 @@ function windowResizeCalculate() {
     Params.gameWidth = Math.min(gw, ww / scale);
 }
 
-function checkOrientation() {
-    const rotClassName = 'rotate-image-container';
-    const imgId = 'rotate__image';
-    const ar = 600 / 600;
-    const ww = window.innerWidth;
-    const wh = window.innerHeight;
-
-    if (isLand && ww / wh < ar) {
-
-        // LogMng.debug('show rotate img');
-        isLand = false;
-        let divGame = document.getElementById('game');
-        let divRotate = document.getElementsByClassName(rotClassName)[0] as any;
-        divGame.style.display = 'none';
-        divRotate.style.display = 'flex';
-
-
-        // Get references to the image and container
-        if (!document.getElementById(imgId)) {
-            // Create a new Image object
-            // LogMng.debug('Create a new Image object');
-            var img = new Image();
-            img.id = imgId;
-            img.alt = 'Rotate device to landscape orientation';
-            img.src = './assets/images/rotate-phone-icon-white.png';
-            divRotate.appendChild(img);
-        }
-
-    }
-    else if (!isLand && ww / wh >= ar) {
-        // LogMng.debug('hide rotate img');
-        isLand = true;
-        let divGame = document.getElementById('game');
-        let divRotate = document.getElementsByClassName(rotClassName)[0] as any;
-        divGame.style.display = 'flex';
-        divRotate.style.display = 'none';
-    }
-}
-
 window.addEventListener('resize', () => {
-    checkOrientation();
+    if (Config.ORIENTATION.check) {
+        OriAlertMng.checkOrientation();
+    }
     windowResizeCalculate();
     FrontEvents.getInstance().emit(FrontEvents.EVENT_WINDOW_RESIZE);
 }, false);
@@ -102,11 +64,14 @@ window.addEventListener('load', () => {
         let error = `ERROR: game container ${gameContainerId} not found!`;
         alert(error);
         throw error;
+        return;
     }
-    else {
-        checkOrientation();
-        windowResizeCalculate();
-        startGame({ parent: gameContainer });
+
+    if (Config.ORIENTATION.check) {
+        OriAlertMng.initOrientation();
+        OriAlertMng.checkOrientation(true);
     }
+    windowResizeCalculate();
+    startGame({ parent: gameContainer });
 
 }, false);

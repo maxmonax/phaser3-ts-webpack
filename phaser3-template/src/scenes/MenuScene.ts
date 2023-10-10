@@ -34,10 +34,6 @@ export class MenuScene extends CurtainScene {
 
         this.dummyMain = this.add.container(0, 0);
 
-        let bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'bg');
-        bg.scaleX = Config.GW / bg.width;
-        this.dummyMain.add(bg);
-
         this.btnPlay = new Phaser.GameObjects.Image(this, Config.GW / 2, Config.GH / 2, 'game', 'btnPlay');
         this.btnPlay.setInteractive({ cursor: 'pointer' });
         this.btnPlay.on('pointerdown', () => {

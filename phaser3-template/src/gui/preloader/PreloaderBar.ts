@@ -7,7 +7,7 @@ export class PreloaderBar extends Phaser.GameObjects.Container {
     private _barWidth = 0;
     private _barHeight = 0;
 
-    constructor(scene, x, y, aUseSimpleGraphics: boolean, aBorderColor = 0x00bc77, aLineColor = 0x00ffa2) {
+    constructor(scene, x, y, aUseSimpleGraphics: boolean, aBorderColor = 0xffffff, aLineColor = 0xffffff) {
         super(scene, x, y);
 
         this._useSimple = aUseSimpleGraphics;

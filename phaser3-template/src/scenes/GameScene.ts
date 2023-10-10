@@ -19,9 +19,6 @@ export class GameScene extends CurtainScene {
 
         AudioMng.scene = this;
 
-        let bg = this.add.image(Config.GW_HALF, Config.GH_HALF, 'bg');
-        this.add.existing(bg);
-
         this.btnBack = new Phaser.GameObjects.Image(this, 0, 80, 'game', 'btnBack');
         this.btnBack.setInteractive({ cursor: 'pointer' });
         this.btnBack.on('pointerdown', () => {
@@ -34,7 +31,7 @@ export class GameScene extends CurtainScene {
 
         let scoreText = new Phaser.GameObjects.Text(this, Config.GW / 2, 200, 'Game Screen\nCustom google font', {
             fontFamily: 'Ubuntu',
-            color: '#4d81e8',
+            color: '#ffffff',
             align: 'center'
         });
         scoreText.setFontSize(80);

@@ -11,7 +11,16 @@ export const Config = {
     GW_SAFE: 1440,
     GH_SAFE: 1080,
 
-    TAP_TO_START: true,
-    DRAW_DEBUG_BORDER: true
+    ORIENTATION: {
+        check: true,
+        inLandscape: true,
+        ar: 1440 / 1080
+    },
+
+    PRELOADER: {
+        BAR: true,
+        TAP_TO_START: true,
+        DRAW_DEBUG_BORDER: false
+    }
 
 };

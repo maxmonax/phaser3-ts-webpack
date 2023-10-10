@@ -15,7 +15,8 @@ body {
     margin: 0;
     border: none;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #222;
+    background: rgb(128, 165, 255);
+    background: radial-gradient(circle, rgba(128, 165, 255, 1) 0%, rgba(0, 53, 255, 1) 100%);
 }
 
 body,
@@ -40,8 +41,8 @@ html {
 }
 
 #rotate__image {
-    width: 85%;
-    max-width: 250px;
+    width: 60%;
+    max-width: 200px;
 }
 
 canvas {
