@@ -5,7 +5,7 @@ const rotClassName = 'rotate-image-container';
 const imgId = 'rotate__image';
 const imgSrc = './assets/images/rotate-phone-icon-white.png';
 
-export class OriAlertMng {
+export class OrientationAlert {
 
     private static showOrientationAlert() {
         let divGame = document.getElementById('game');
@@ -46,18 +46,18 @@ export class OriAlertMng {
 
         if (isLand && !Params.isLandscape) {
             if (Config.ORIENTATION.inLandscape) {
-                OriAlertMng.hideOrientationAlert();
+                OrientationAlert.hideOrientationAlert();
             }
             else {
-                OriAlertMng.showOrientationAlert();
+                OrientationAlert.showOrientationAlert();
             }
         }
         else if (!isLand && Params.isLandscape) {
             if (Config.ORIENTATION.inLandscape) {
-                OriAlertMng.showOrientationAlert();
+                OrientationAlert.showOrientationAlert();
             }
             else {
-                OriAlertMng.hideOrientationAlert();
+                OrientationAlert.hideOrientationAlert();
             }
         }
         Params.isLandscape = isLand;

@@ -1,3 +1,4 @@
+import { AudioMng } from "@/audio/AudioMng";
 import { Config } from "../data/Config";
 import { ILogger } from "../interfaces/ILogger";
 import { LogMng } from "../utils/LogMng";
@@ -23,6 +24,7 @@ export class CurtainScene extends Phaser.Scene implements ILogger {
     }
 
     public create(aIsGraphicsCurtain = true): void {
+        AudioMng.scene = this;
         this._isGraphicsCurtain = aIsGraphicsCurtain;
         this.initCurtains();
         this.hideCurtain();

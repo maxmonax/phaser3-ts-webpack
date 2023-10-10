@@ -4,12 +4,13 @@ import { FrontEvents } from "../events/FrontEvents";
 import { GameEvents } from "../events/GameEvents";
 import { CurtainScene } from "./CurtainScene";
 import { SceneNames } from "./SceneNames";
+import { MyBtn, MyBtnEvent } from "@/gui/MyBtn";
 
 export class MenuScene extends CurtainScene {
 
     private dummyMain: Phaser.GameObjects.Container;
     // GUI
-    private btnPlay: Phaser.GameObjects.Image;
+    private btnPlay: MyBtn;
 
     constructor() {
         super(SceneNames.MenuScene);
@@ -21,30 +22,15 @@ export class MenuScene extends CurtainScene {
 
     public create(): void {
 
-        AudioMng.scene = this;
-
-        // music example
-        // if (!Params.music) {
-        //     Params.music = this.sound.add('music', { loop: true, volume: .2 });
-        //     Params.music.play();
-        // }
-        // else {
-        //     Params.music.volume = .2;
-        // }
-
         this.dummyMain = this.add.container(0, 0);
 
-        this.btnPlay = new Phaser.GameObjects.Image(this, Config.GW / 2, Config.GH / 2, 'game', 'btnPlay');
-        this.btnPlay.setInteractive({ cursor: 'pointer' });
-        this.btnPlay.on('pointerdown', () => {
-            this.btnPlay['isPointerDown'] = true;
-            AudioMng.playSfx(AudioAlias.Click);
+        this.btnPlay = new MyBtn(this, Config.GW / 2, Config.GH / 2, {
+            texture: 'game',
+            frame: 'btnPlay',
+            onClick: this.onPlayBtnClick,
+            context: this
         });
-        this.btnPlay.on('pointerup', () => {
-            if (this.btnPlay['isPointerDown'] != true) return;
-            this.btnPlay['isPointerDown'] = false;
-            this.onPlayBtnClick();
-        });
+        // this.btnPlay.on(MyBtnEvent.Click, this.onPlayBtnClick, this);
         this.add.existing(this.btnPlay);
         
         this.events.once('shutdown', this.onSceneShutdown, this);
@@ -53,6 +39,16 @@ export class MenuScene extends CurtainScene {
         this.onResize();
 
         super.create();
+
+        // global music example
+        // if (!Params.music) {
+        //     Params.music = this.sound.add('music', { loop: true, volume: .2 });
+        //     Params.music.play();
+        // }
+        // else {
+        //     Params.music.volume = .2;
+        // }
+
     }
 
     private onResize() {

@@ -15,7 +15,7 @@ import { FrontEvents } from "./events/FrontEvents";
 // @ts-ignore
 // import { SpinePlugin } from 'phaser/types/SpinePlugin';
 import "./_html/css/main.css";
-import { OriAlertMng } from "./mng/OriAlertMng";
+import { OrientationAlert } from "./scaling/OrientationAlert";
 
 function startGame(aGameParams: {
     parent: HTMLElement
@@ -50,7 +50,7 @@ function windowResizeCalculate() {
 
 window.addEventListener('resize', () => {
     if (Config.ORIENTATION.check) {
-        OriAlertMng.checkOrientation();
+        OrientationAlert.checkOrientation();
     }
     windowResizeCalculate();
     FrontEvents.getInstance().emit(FrontEvents.EVENT_WINDOW_RESIZE);
@@ -68,8 +68,8 @@ window.addEventListener('load', () => {
     }
 
     if (Config.ORIENTATION.check) {
-        OriAlertMng.initOrientation();
-        OriAlertMng.checkOrientation(true);
+        OrientationAlert.initOrientation();
+        OrientationAlert.checkOrientation(true);
     }
     windowResizeCalculate();
     startGame({ parent: gameContainer });
