@@ -28,7 +28,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             title: 'base config',
-            template: path.resolve(__src, '_html', 'index.html'),
+            template: path.resolve(__src, 'html', 'index.html'),
             filename: 'index.html',
             minify: {
                 // collapseWhitespace: true,

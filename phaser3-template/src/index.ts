@@ -1,3 +1,4 @@
+import "./html/css/main.css";
 import * as Phaser from "phaser";
 import { Config } from "./data/Config";
 import { Params } from "./data/Params";
@@ -6,6 +7,8 @@ import { GameScene } from "./scenes/GameScene";
 import { PreloaderScene } from "./scenes/PreloaderScene";
 import { MenuScene } from "./scenes/MenuScene";
 import { FrontEvents } from "./events/FrontEvents";
+import { OrientationAlert } from "./scaling/OrientationAlert";
+// for spine
 // @ts-ignore
 // import "phaser/plugins/spine/dist/SpinePlugin";
 // @ts-ignore
@@ -14,8 +17,6 @@ import { FrontEvents } from "./events/FrontEvents";
 // import { SpineGameObject } from 'phaser/types/SpineGameObject';
 // @ts-ignore
 // import { SpinePlugin } from 'phaser/types/SpinePlugin';
-import "./_html/css/main.css";
-import { OrientationAlert } from "./scaling/OrientationAlert";
 
 function startGame(aGameParams: {
     parent: HTMLElement
