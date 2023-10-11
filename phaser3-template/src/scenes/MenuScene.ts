@@ -25,12 +25,10 @@ export class MenuScene extends CurtainScene {
         this.dummyMain = this.add.container(0, 0);
 
         this.btnPlay = new MyBtn(this, Config.GW / 2, Config.GH / 2, {
-            texture: 'game',
             frame: 'btnPlay',
             onClick: this.onPlayBtnClick,
             context: this
         });
-        // this.btnPlay.on(MyBtnEvent.Click, this.onPlayBtnClick, this);
         this.add.existing(this.btnPlay);
         
         this.events.once('shutdown', this.onSceneShutdown, this);

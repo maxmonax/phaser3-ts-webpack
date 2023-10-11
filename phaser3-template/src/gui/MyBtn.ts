@@ -2,13 +2,9 @@ import { AudioAlias, AudioMng } from "@/audio/AudioMng";
 import { MyContainer } from "./MyContainer";
 import { MyImage } from "./MyImage";
 
-export enum MyBtnEvent {
-    Click = 'Click'
-}
-
 type MyBtnParams = {
-    texture: string,
-    frame: string,
+    texture?: string,
+    frame?: string,
     frameOn?: string,
     frameDisabled?: string,
     size?: {
@@ -21,6 +17,17 @@ type MyBtnParams = {
     audioClickAlias?: string,
     onClick?: Function,
     context?: any
+}
+
+const DEFAULT: MyBtnParams = {
+    texture: 'game',
+    overScale: true,
+    clickScale: true,
+    audioClickAlias: AudioAlias.Click
+}
+
+export enum MyBtnEvent {
+    Click = 'Click'
 }
 
 export class MyBtn extends MyContainer {
@@ -37,10 +44,11 @@ export class MyBtn extends MyContainer {
         super(scene, x, y);
 
         this._params = aParams;
-        if (this._params.scale == undefined) this._params.scale = 1;
-        if (this._params.overScale == undefined) this._params.overScale = true;
-        if (this._params.clickScale == undefined) this._params.clickScale = true;
-        if (this._params.audioClickAlias == undefined) this._params.audioClickAlias = AudioAlias.Click;
+
+        for (const key in DEFAULT) {
+            const defaultValue = DEFAULT[key];
+            if (this._params[key] == undefined) this._params[key] = defaultValue;
+        }
 
         this._img = new MyImage(scene, 0, 0, this._params.texture, this._params.frame);
         
@@ -52,7 +60,7 @@ export class MyBtn extends MyContainer {
         }
         if (!this._params.size.h) this._params.size.h = this._params.size.w;
 
-        this._img.scale = this._params.scale;
+        this._img.scale = this._params.scale != undefined ? this._params.scale : 1;
         this.add(this._img);
 
         const size = this._params.size;

@@ -28,16 +28,7 @@ export class GameScene extends CurtainScene {
         this._dummyGui = new MyContainer(this, 0, 0);
         this.add.existing(this._dummyGui);
 
-        // this.btnBack = new Phaser.GameObjects.Image(this, 0, 80, 'game', 'btnBack');
-        // this.btnBack.setInteractive({ cursor: 'pointer' });
-        // this.btnBack.on('pointerdown', () => {
-        //     AudioMng.playSfx(AudioAlias.Click);
-        // }, this);
-        // this.btnBack.on('pointerup', () => {
-        //     this.onBackClick();
-        // }, this);
         this.btnBack = new MyBtn(this, 0, 80, {
-            texture: 'game',
             frame: 'btnBack',
             onClick: this.onBackClick,
             context: this
