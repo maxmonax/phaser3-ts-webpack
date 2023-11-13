@@ -26,7 +26,6 @@ function startGame(aGameParams: {
         parent: aGameParams.parent,
         backgroundColor: 0x222222,
         transparent: true,
-        //*
         scale: {
             mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
             autoCenter: Phaser.Scale.CENTER_BOTH,

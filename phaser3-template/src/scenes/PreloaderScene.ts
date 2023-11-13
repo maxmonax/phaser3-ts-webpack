@@ -80,16 +80,16 @@ export class PreloaderScene extends Phaser.Scene {
                 .setOrigin(0.5);
 
             this.input.once('pointerdown', () => {
-                this.starGame();
+                this.startGame();
             });
 
         }
         else {
-            this.starGame();
+            this.startGame();
         }
     }
 
-    private starGame() {
+    private startGame() {
         this.scene.start(SceneNames.MenuScene);
     }
     
