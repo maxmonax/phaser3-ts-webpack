@@ -168,11 +168,48 @@ export class MyMath {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    public static getVec3Length(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): number {
-        let dx = x2 - x1;
-        let dy = y2 - y1;
-        let dz = z2 - z1;
+    public static getVec3Length(x1: number | { x: number, y: number, z: number }, y1?: number, z1?: number, x2?: number, y2?: number, z2?: number): number {
+        let dx = 0;
+        let dy = 0;
+        let dz = 0;
+        if (typeof x1 == 'number') {
+            dx = x2 - x1;
+            dy = y2 - y1;
+            dz = z2 - z1;
+        }
+        else {
+            dx = x1.x;
+            dy = x1.y;
+            dz = x1.z;
+        }
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    public static normalizeVector(v: { x: number, y: number }): { x: number, y: number } {
+        const length = this.getVec2Length(0, 0, v.x, v.y);
+        return { x: v.x / length, y: v.y / length };
+    }
+
+    public static distanceBetween(p1: { x: number, y: number }, p2: { x: number, y: number }): number {
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * Convert angle to Vec2
+     * @param aAngle angle in radians
+     * @returns 
+     */
+    public static angleToVec2(aAngle: number): Vec2 {
+        return new Vec2(Math.cos(aAngle), Math.sin(aAngle));
+    }
+
+    /**
+     * dot product of vectors (scalar product)
+     */
+    public static dotVec3(a: { x, y, z }, b: { x, y, z }): number {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
     /**
@@ -216,6 +253,13 @@ export class MyMath {
         let mod2 = Math.sqrt(x2 * x2 + y2 * y2);
         return Math.asin(scalar / (mod1 * mod2));
     };
+
+    /**
+     * Projection of vector a to vector b
+     */
+    public static getVec3Projection(a: { x, y, z }, b: { x, y, z }): number {
+        return this.dotVec3(a, b) / this.getVec3Length(b);
+    }
 
     public static isPointInTriangle(ax, ay, bx, by, cx, cy, px, py: number): boolean {
         let b0x, b0y, c0x, c0y, p0x, p0y: number;
