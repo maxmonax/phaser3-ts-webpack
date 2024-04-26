@@ -2,7 +2,7 @@ import { AudioAlias, AudioMng } from "@/audio/AudioMng";
 import { MyContainer } from "./MyContainer";
 import { MyImage } from "./MyImage";
 
-type MyBtnParams = {
+export type MyBtnParams = {
     texture?: string,
     frame?: string,
     frameOn?: string,
@@ -30,7 +30,7 @@ export enum MyBtnEvent {
     Click = 'Click'
 }
 
-export class MyBtn extends MyContainer {
+export class MyButton extends MyContainer {
 
     private _params: MyBtnParams;
     private _img: MyImage;

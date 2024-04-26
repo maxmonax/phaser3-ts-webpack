@@ -1,16 +1,14 @@
-import { AudioMng, AudioAlias } from "@/audio/AudioMng";
+import { MyButton } from "@/gui/basic/MyButton";
 import { Config } from "../data/Config";
 import { FrontEvents } from "../events/FrontEvents";
-import { GameEvents } from "../events/GameEvents";
 import { CurtainScene } from "./CurtainScene";
 import { SceneNames } from "./SceneNames";
-import { MyBtn, MyBtnEvent } from "@/gui/MyBtn";
 
 export class MenuScene extends CurtainScene {
 
     private dummyMain: Phaser.GameObjects.Container;
     // GUI
-    private btnPlay: MyBtn;
+    private btnPlay: MyButton;
 
     constructor() {
         super(SceneNames.MenuScene);
@@ -24,7 +22,7 @@ export class MenuScene extends CurtainScene {
 
         this.dummyMain = this.add.container(0, 0);
 
-        this.btnPlay = new MyBtn(this, Config.GW / 2, Config.GH / 2, {
+        this.btnPlay = new MyButton(this, Config.GW / 2, Config.GH / 2, {
             frame: 'btnPlay',
             onClick: this.onPlayBtnClick,
             context: this

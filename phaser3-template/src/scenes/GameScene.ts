@@ -1,11 +1,10 @@
-import { AudioAlias, AudioMng } from "@/audio/AudioMng";
 import { Config } from "../data/Config";
 import { Params } from "../data/Params";
 import { FrontEvents } from "../events/FrontEvents";
 import { CurtainScene } from "./CurtainScene";
 import { SceneNames } from "./SceneNames";
-import { MyContainer } from "@/gui/MyContainer";
-import { MyBtn } from "@/gui/MyBtn";
+import { MyContainer } from "@/gui/basic/MyContainer";
+import { MyButton } from "@/gui/basic/MyButton";
 
 export class GameScene extends CurtainScene {
     
@@ -13,7 +12,7 @@ export class GameScene extends CurtainScene {
     private _dummyGui: MyContainer;
     // GUI
     // private btnBack: Phaser.GameObjects.Image;
-    private btnBack: MyBtn;
+    private btnBack: MyButton;
 
 
     constructor() {
@@ -28,7 +27,7 @@ export class GameScene extends CurtainScene {
         this._dummyGui = new MyContainer(this, 0, 0);
         this.add.existing(this._dummyGui);
 
-        this.btnBack = new MyBtn(this, 0, 80, {
+        this.btnBack = new MyButton(this, 0, 80, {
             frame: 'btnBack',
             onClick: this.onBackClick,
             context: this
