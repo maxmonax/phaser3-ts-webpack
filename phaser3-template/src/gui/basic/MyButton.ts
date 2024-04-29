@@ -1,6 +1,7 @@
-import { AudioAlias, AudioMng } from "@/audio/AudioMng";
+import { AudioMng } from "@/audio/AudioMng";
 import { MyContainer } from "./MyContainer";
 import { MyImage } from "./MyImage";
+import { AudioAlias } from "@/audio/AudioData";
 
 export type MyBtnParams = {
     texture?: string,
@@ -12,7 +13,8 @@ export type MyBtnParams = {
         h?: number
     },
     scale?: number,
-    overScale?: boolean,
+    hoverScaleFactor?: number,
+    isHoverAnim?: boolean,
     clickScale?: boolean,
     audioClickAlias?: string,
     onClick?: Function,
@@ -20,8 +22,10 @@ export type MyBtnParams = {
 }
 
 const DEFAULT: MyBtnParams = {
-    texture: 'game',
-    overScale: true,
+    texture: '',
+    scale: 1,
+    isHoverAnim: true,
+    hoverScaleFactor: 1.1,
     clickScale: true,
     audioClickAlias: AudioAlias.Click
 }
@@ -33,7 +37,8 @@ export enum MyBtnEvent {
 export class MyButton extends MyContainer {
 
     private _params: MyBtnParams;
-    private _img: MyImage;
+    protected _dummy: MyContainer;
+    protected _img: MyImage;
     private _overDur = 200;
     private _tweenOver: Phaser.Tweens.Tween;
     private _isOver = false;
@@ -50,18 +55,22 @@ export class MyButton extends MyContainer {
             if (this._params[key] == undefined) this._params[key] = defaultValue;
         }
 
+        this._dummy = new MyContainer(scene, 0, 0);
+        this._dummy.scale = .01;
+        this.add(this._dummy);
+
         this._img = new MyImage(scene, 0, 0, this._params.texture, this._params.frame);
-        
+        this._dummy.add(this._img);
+
         if (!this._params.size) {
             this._params.size = {
-                w: this._img.width,
-                h: this._img.height
+                w: this._img.width * this._params.scale,
+                h: this._img.height * this._params.scale
             }
         }
         if (!this._params.size.h) this._params.size.h = this._params.size.w;
 
-        this._img.scale = this._params.scale != undefined ? this._params.scale : 1;
-        this.add(this._img);
+        this._dummy.add(this._img);
 
         const size = this._params.size;
         this.setInteractive({
@@ -79,13 +88,20 @@ export class MyButton extends MyContainer {
             this.on(MyBtnEvent.Click, aParams.onClick, aParams.context);
         }
 
+        this.scene.tweens.add({
+            targets: this._dummy,
+            scale: this._params.scale,
+            duration: 200,
+            ease: 'Circ.Out'
+        });
+
     }
 
     private overAnim() {
         if (this._tweenOver) this._tweenOver.stop();
         this._tweenOver = this.scene.tweens.add({
-            targets: this._img,
-            scale: 1.1,
+            targets: this._dummy,
+            scale: this._params.scale * this._params.hoverScaleFactor,
             duration: this._overDur,
             ease: Phaser.Math.Easing.Back.Out
             // ease: Phaser.Math.Easing.Sine.Out
@@ -95,8 +111,8 @@ export class MyButton extends MyContainer {
     private outAnim() {
         if (this._tweenOver) this._tweenOver.stop();
         this._tweenOver = this.scene.tweens.add({
-            targets: this._img,
-            scale: 1,
+            targets: this._dummy,
+            scale: this._params.scale,
             duration: this._overDur,
             ease: Phaser.Math.Easing.Sine.Out
         })
@@ -105,14 +121,14 @@ export class MyButton extends MyContainer {
     private onPointerOver() {
         if (this._isOver) return;
         this._isOver = true;
-        if (this._params.overScale) this.overAnim();
+        if (this._params.isHoverAnim) this.overAnim();
     }
     
     private onPointerOut() {
         if (!this._isOver) return;
         this._isOver = false;
         this._isDown = false;
-        if (this._params.overScale) this.outAnim();
+        if (this._params.isHoverAnim) this.outAnim();
     }
 
     private onPointerDown(p) {
@@ -136,6 +152,11 @@ export class MyButton extends MyContainer {
         else {
             this.setInteractive();
         }
+    }
+
+    setNewScale(aScale: number) {
+        this._params.scale = aScale;
+        this._dummy.setScale(this._params.scale);
     }
 
 

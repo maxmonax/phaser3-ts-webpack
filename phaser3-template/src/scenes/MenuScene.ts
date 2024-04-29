@@ -6,28 +6,28 @@ import { SceneNames } from "./SceneNames";
 
 export class MenuScene extends CurtainScene {
 
-    private dummyMain: Phaser.GameObjects.Container;
+    private _dummyMain: Phaser.GameObjects.Container;
     // GUI
-    private btnPlay: MyButton;
+    private _btnPlay: MyButton;
 
     constructor() {
         super(SceneNames.MenuScene);
     }
 
     public init(aData: any) { }
-
+    
     public preload(): void { }
 
     public create(): void {
 
-        this.dummyMain = this.add.container(0, 0);
+        this._dummyMain = this.add.container(0, 0);
 
-        this.btnPlay = new MyButton(this, Config.GW / 2, Config.GH / 2, {
+        this._btnPlay = new MyButton(this, Config.GW / 2, Config.GH / 2, {
             frame: 'btnPlay',
             onClick: this.onPlayBtnClick,
             context: this
         });
-        this.add.existing(this.btnPlay);
+        this._dummyMain.add(this._btnPlay);
         
         this.events.once('shutdown', this.onSceneShutdown, this);
         
