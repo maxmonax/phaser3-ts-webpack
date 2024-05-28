@@ -1,7 +1,6 @@
-import { AudioMng } from "@/audio/AudioMng";
+import { AudioAlias, AudioMng } from "@/audio/AudioMng";
 import { MyContainer } from "./MyContainer";
 import { MyImage } from "./MyImage";
-import { AudioAlias } from "@/audio/AudioData";
 
 export type MyBtnParams = {
     texture?: string,
@@ -11,6 +10,10 @@ export type MyBtnParams = {
     size?: {
         w: number,
         h?: number
+    },
+    interactivePos?: {
+        x: integer,
+        y: integer,
     },
     scale?: number,
     hoverScaleFactor?: number,
@@ -59,10 +62,12 @@ export class MyButton extends MyContainer {
         this._dummy.scale = .01;
         this.add(this._dummy);
 
-        this._img = new MyImage(scene, 0, 0, this._params.texture, this._params.frame);
-        this._dummy.add(this._img);
+        if (this._params.texture) {
+            this._img = new MyImage(scene, 0, 0, this._params.texture, this._params.frame);
+            this._dummy.add(this._img);
+        }
 
-        if (!this._params.size) {
+        if (!this._params.size && this._img) {
             this._params.size = {
                 w: this._img.width * this._params.scale,
                 h: this._img.height * this._params.scale
@@ -70,11 +75,11 @@ export class MyButton extends MyContainer {
         }
         if (!this._params.size.h) this._params.size.h = this._params.size.w;
 
-        this._dummy.add(this._img);
-
         const size = this._params.size;
+        const pos = this._params.interactivePos ? this._params.interactivePos : { x: 0, y: 0 };
+        // this.setSize(size.w, size.h);
         this.setInteractive({
-            hitArea: new Phaser.Geom.Rectangle(-size.w / 2, -size.h / 2, size.w, size.h),
+            hitArea: new Phaser.Geom.Rectangle(-size.w / 2 + pos.x, -size.h / 2 + pos.y, size.w, size.h),
             hitAreaCallback: Phaser.Geom.Rectangle.Contains,
             useHandCursor: true
         });
@@ -83,10 +88,7 @@ export class MyButton extends MyContainer {
         this.on(Phaser.Input.Events.POINTER_OUT, this.onPointerOut, this);
         this.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
         this.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this);
-
-        if (aParams.onClick) {
-            this.on(MyBtnEvent.Click, aParams.onClick, aParams.context);
-        }
+        this.on(MyBtnEvent.Click, this.onClick, this);
 
         this.scene.tweens.add({
             targets: this._dummy,
@@ -123,7 +125,7 @@ export class MyButton extends MyContainer {
         this._isOver = true;
         if (this._params.isHoverAnim) this.overAnim();
     }
-    
+
     private onPointerOut() {
         if (!this._isOver) return;
         this._isOver = false;
@@ -144,6 +146,12 @@ export class MyButton extends MyContainer {
         this.emit(MyBtnEvent.Click, this);
     }
 
+    private onClick() {
+        if (this._params.onClick) {
+            this._params.onClick.call(this._params.context, this);
+        }
+    }
+
     public set disabled(v: boolean) {
         this._disabled = v;
         if (this._disabled) {
@@ -152,6 +160,11 @@ export class MyButton extends MyContainer {
         else {
             this.setInteractive();
         }
+    }
+
+    setClickListener(aCb: Function, aCtx: any) {
+        this._params.onClick = aCb;
+        this._params.context = aCtx;
     }
 
     setNewScale(aScale: number) {
