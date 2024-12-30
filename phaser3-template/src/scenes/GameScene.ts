@@ -11,8 +11,7 @@ export class GameScene extends CurtainScene {
     private _dummyGame: MyContainer;
     private _dummyGui: MyContainer;
     // GUI
-    // private btnBack: Phaser.GameObjects.Image;
-    private btnBack: MyButton;
+    private _btnBack: MyButton;
 
 
     constructor() {
@@ -27,12 +26,12 @@ export class GameScene extends CurtainScene {
         this._dummyGui = new MyContainer(this, 0, 0);
         this.add.existing(this._dummyGui);
 
-        this.btnBack = new MyButton(this, 0, 80, {
+        this._btnBack = new MyButton(this, 0, 80, {
             frame: 'btnBack',
             onClick: this.onBackClick,
             context: this
         });
-        this.add.existing(this.btnBack);
+        this.add.existing(this._btnBack);
 
         let scoreText = new Phaser.GameObjects.Text(this, Config.GW / 2, Config.GH_HALF, 'Game Screen\nCustom google font', {
             fontFamily: 'Ubuntu',
@@ -65,8 +64,8 @@ export class GameScene extends CurtainScene {
     }
 
     private updateBtnBackPos() {
-        if (this.btnBack) {
-            this.btnBack.x = (Config.GW - Params.gameWidth) / 2 + 90;
+        if (this._btnBack) {
+            this._btnBack.x = (Config.GW - Params.gameWidth) / 2 + 90;
         }
     }
 

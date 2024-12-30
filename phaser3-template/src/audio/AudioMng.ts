@@ -1,7 +1,7 @@
 ﻿import { LogMng } from "../utils/LogMng";
 import { MyMath } from "../utils/MyMath";
 
-// sounds
+// aliases
 export enum AudioAlias {
   Click = 'Click',
 }
