@@ -67,10 +67,15 @@ export class MyButton extends MyContainer {
             this._dummy.add(this._img);
         }
 
-        if (!this._params.size && this._img) {
+        if (!this._params.size) {
             this._params.size = {
-                w: this._img.width * this._params.scale,
-                h: this._img.height * this._params.scale
+                w: 0
+            }
+            if (this._img) {
+                this._params.size = {
+                    w: this._img.width * this._params.scale,
+                    h: this._img.height * this._params.scale
+                }
             }
         }
         if (!this._params.size.h) this._params.size.h = this._params.size.w;

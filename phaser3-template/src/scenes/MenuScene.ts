@@ -23,6 +23,7 @@ export class MenuScene extends CurtainScene {
         this._dummyMain = this.add.container(0, 0);
 
         this._btnPlay = new MyButton(this, Config.GW / 2, Config.GH / 2, {
+            texture: 'game',
             frame: 'btnPlay',
             onClick: this.onPlayBtnClick,
             context: this
