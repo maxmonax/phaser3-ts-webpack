@@ -13,10 +13,10 @@ export class CurtainScene extends Phaser.Scene implements ILogger {
 
     private _sceneName: string;
     private _isGraphicsCurtain = false;
-    private _grCurtain: Phaser.GameObjects.Graphics;
-    private _curtTop: Phaser.GameObjects.Image;
-    private _curtBot: Phaser.GameObjects.Image;
-    private _curtLogo: Phaser.GameObjects.Image;
+    private _grCurtain!: Phaser.GameObjects.Graphics;
+    private _curtTop!: Phaser.GameObjects.Image;
+    private _curtBot!: Phaser.GameObjects.Image;
+    private _curtLogo!: Phaser.GameObjects.Image;
 
     constructor(aSceneName: string) {
         super(aSceneName);
@@ -56,7 +56,7 @@ export class CurtainScene extends Phaser.Scene implements ILogger {
         }
     }
 
-    protected hideCurtain(cb?: Function, ctx?: any) {
+    protected hideCurtain(cb?: () => void, ctx?: object) {
         if (this._isGraphicsCurtain) {
             const dur = SETTINGS.grCurtainDuration;
             this.tweens.killTweensOf(this._grCurtain);
@@ -104,7 +104,7 @@ export class CurtainScene extends Phaser.Scene implements ILogger {
         }
     }
 
-    protected showCurtain(cb?: Function, ctx?: any) {
+    protected showCurtain(cb?: () => void, ctx?: object) {
         if (this._isGraphicsCurtain) {
             const dur = SETTINGS.grCurtainDuration;
             this.tweens.killTweensOf(this._grCurtain);
@@ -121,8 +121,6 @@ export class CurtainScene extends Phaser.Scene implements ILogger {
         }
         else {
             // TODO: image curtains
-            const dur = SETTINGS.imageCurtainDuration;
-
         }
     }
 

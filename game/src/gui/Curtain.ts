@@ -6,7 +6,7 @@ export class Curtain extends MyContainer {
     private _curtain: MyGraphics;
 
     constructor(aParams: {
-        scene,
+        scene: Phaser.Scene,
         w: number,
         h: number,
         x?: number,
@@ -41,8 +41,8 @@ export class Curtain extends MyContainer {
     showCurtain(aParams?: {
         dur?: number,
         alpha?: number,
-        cb?: Function,
-        ctx?: any
+        cb?: () => void,
+        ctx?: object
     }) {
         let dur = aParams?.dur || 0;
         let alpha = aParams?.alpha || 1;
@@ -73,7 +73,7 @@ export class Curtain extends MyContainer {
         }
     }
 
-    hideCurtain(aDur = 0, aCallback?: Function, aCtx?: any) {
+    hideCurtain(aDur = 0, aCallback?: () => void, aCtx?: object) {
         if (aDur > 0) {
             this.scene.tweens.killTweensOf(this._curtain);
             this.scene.tweens.add({

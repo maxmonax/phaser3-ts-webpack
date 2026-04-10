@@ -4,7 +4,7 @@ import { LogMng } from "@/utils/LogMng";
 export class MyContainer extends Phaser.GameObjects.Container implements ILogger {
     private _className: string = 'MyContainer';
     
-    constructor(scene, x?, y?, children?) {
+    constructor(scene: Phaser.Scene, x?: number, y?: number, children?: Phaser.GameObjects.GameObject[]) {
         super(scene, x, y, children);
     }
 

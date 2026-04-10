@@ -61,10 +61,9 @@ window.addEventListener('load', () => {
     const gameContainerId = 'game';
     let gameContainer = document.getElementById(gameContainerId);
     if (!gameContainer) {
-        let error = `ERROR: game container ${gameContainerId} not found!`;
+        const error = `ERROR: game container ${gameContainerId} not found!`;
         alert(error);
-        throw error;
-        return;
+        throw new Error(error);
     }
 
     if (Config.ORIENTATION.check) {

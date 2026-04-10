@@ -1,4 +1,4 @@
-const path = require('path/posix');
+const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
@@ -7,13 +7,13 @@ const common = require('./webpack.common.js');
 
 // paths
 const __base = path.resolve(__dirname, '..');
-const __src = path.resolve(__base, 'src');
 
 module.exports = merge(common, {
     // prod mode
     mode: 'production',
     devtool: false,
 
+    // override resolve to use tsconfig.prod.json
     resolve: {
         plugins: [
             new TsconfigPathsPlugin({
@@ -22,6 +22,12 @@ module.exports = merge(common, {
             })
         ],
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    },
+
+    output: {
+        filename: '[name].[contenthash:8].js',
+        path: path.resolve(__base, 'build'),
+        clean: true
     },
 
     plugins: [
@@ -40,7 +46,12 @@ module.exports = merge(common, {
                     // Translates CSS into CommonJS
                     "css-loader",
                     // Compiles Sass to CSS
-                    "sass-loader",
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            api: "modern",
+                        },
+                    },
                 ],
             }
         ]

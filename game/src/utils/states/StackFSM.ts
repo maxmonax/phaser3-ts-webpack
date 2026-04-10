@@ -2,10 +2,10 @@ import { LogMng } from "../LogMng";
 
 type StateItem = {
     name: string;
-    onStart: Function;
-    onUpdate: Function;
-    onEnd: Function;
-    context: any;
+    onStart?: (...args: unknown[]) => void;
+    onUpdate?: (...args: unknown[]) => void;
+    onEnd?: (...args: unknown[]) => void;
+    context?: unknown;
 };
 
 export class StackFSM {
@@ -17,7 +17,7 @@ export class StackFSM {
         this.stack = [];
     }
 
-    initState(aName: string, aContext?: any, aUpdate?: Function, aStart?: Function, aEnd?: Function) {
+    initState(aName: string, aContext?: unknown, aUpdate?: (...args: unknown[]) => void, aStart?: (...args: unknown[]) => void, aEnd?: (...args: unknown[]) => void) {
         if (this.stateList[aName]) {
             LogMng.warn('StackFSM: Trying to add an already existing state ' + aName);
             return;
@@ -32,26 +32,26 @@ export class StackFSM {
     }
 
     pushState(aName: string) {
-        let stateData = this.stateList[aName];
+        const stateData = this.stateList[aName];
         if (!stateData) {
             LogMng.warn('StackFSM: Trying to push a uninitialized state ' + aName);
             return;
         }
-        
-        let currState = this.getCurrentState();
-        if (!currState || currState.name != aName) {
+
+        const currState = this.getCurrentState();
+        if (!currState || currState.name !== aName) {
             this.stack.push(stateData);
             if (stateData.onStart) stateData.onStart.call(stateData.context);
         }
     }
 
     popState() {
-        let st = this.stack.pop();
-        if (st.onEnd) st.onEnd.call(st.context);
+        const st = this.stack.pop();
+        if (st?.onEnd) st.onEnd.call(st.context);
     }
-    
-    getCurrentState(): StateItem {
-        return this.stack.length > 0 ? this.stack[this.stack.length - 1] : null;
+
+    getCurrentState(): StateItem | undefined {
+        return this.stack.length > 0 ? this.stack[this.stack.length - 1] : undefined;
     }
 
     free() {
@@ -60,8 +60,7 @@ export class StackFSM {
     }
 
     update(dt: number): void {
-        let currStateItem = this.getCurrentState();
-
+        const currStateItem = this.getCurrentState();
         if (currStateItem && currStateItem.onUpdate) {
             currStateItem.onUpdate.call(currStateItem.context, dt);
         }

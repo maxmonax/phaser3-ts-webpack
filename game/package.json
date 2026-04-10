@@ -6,7 +6,10 @@
     "scripts": {
         "dev": "webpack serve --config configs/webpack.dev.js",
         "dev:open": "webpack serve --config configs/webpack.dev.js --open",
-        "build:prod": "webpack --config configs/webpack.prod.js --progress"
+        "build:prod": "webpack --config configs/webpack.prod.js --progress",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix"
     },
     "author": "Monax",
     "license": "ISC",
@@ -18,7 +21,6 @@
         "copy-webpack-plugin": "^11.0.0",
         "css-loader": "^6.8.1",
         "css-minimizer-webpack-plugin": "^5.0.1",
-        "file-loader": "^6.2.0",
         "html-webpack-plugin": "^5.5.3",
         "mini-css-extract-plugin": "^2.7.6",
         "sass": "^1.99.0",

@@ -8,10 +8,10 @@ import { MyButton } from "@/gui/basic/MyButton";
 
 export class GameScene extends CurtainScene {
     
-    private _dummyGame: MyContainer;
-    private _dummyGui: MyContainer;
+    private _dummyGame!: MyContainer;
+    private _dummyGui!: MyContainer;
     // GUI
-    private _btnBack: MyButton;
+    private _btnBack!: MyButton;
 
 
     constructor() {
@@ -53,6 +53,9 @@ export class GameScene extends CurtainScene {
         // this.input.on('dragend', this.onDragEnd, this);
         
         FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
+        this.events.once('shutdown', () => {
+            FrontEvents.getInstance().removeListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
+        }, this);
         this.onResize();
 
         super.create();
@@ -75,9 +78,7 @@ export class GameScene extends CurtainScene {
         });
     }
     
-    update(allTime: number, dtMs: number) {
-        // get dt in Sec
-        let dt = dtMs * 0.001;
+    update(_allTime: number, _dtMs: number) {
     }
 
 }

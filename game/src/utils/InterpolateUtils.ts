@@ -9,7 +9,7 @@ export class InterpolationUtils {
      *
      * @return {number} The Bernstein basis of Factorial(n) / Factorial(i) / Factorial(n - i)
      */
-    static bernstein(n, i) {
+    static bernstein(n: number, i: number): number {
         return MyMath.factorial(n) / MyMath.factorial(i) / MyMath.factorial(n - i);
     };
 
@@ -31,10 +31,10 @@ export class InterpolationUtils {
     *
     * @return {number} The interpolated value.
     */
-    public static bezier(v: number[], k: number) {
-        var b = 0;
-        var n = v.length - 1;
-        for (var i = 0; i <= n; i++) {
+    public static bezier(v: number[], k: number): number {
+        let b = 0;
+        const n = v.length - 1;
+        for (let i = 0; i <= n; i++) {
             b += Math.pow(1 - k, n - i) * Math.pow(k, i) * v[i] * this.bernstein(n, i);
         }
         return b;
@@ -43,21 +43,18 @@ export class InterpolationUtils {
 }
 
 
-export class MySpline {
-    private _points: { val, t }[];
-    private _interpolateFunc: Function;
+type InterpolateFunc = (a: number, b: number, t: number) => number;
 
-    constructor(aInterpolateFunc?: Function) {
+export class MySpline {
+    private _points: { val: number; t: number }[];
+    private _interpolateFunc: InterpolateFunc;
+
+    constructor(aInterpolateFunc?: InterpolateFunc) {
         this._points = [];
-        if (aInterpolateFunc) {
-            this._interpolateFunc = aInterpolateFunc;
-        }
-        else {
-            this._interpolateFunc = InterpolationUtils.linear;
-        }
+        this._interpolateFunc = aInterpolateFunc ?? InterpolationUtils.linear;
     }
 
-    addPoint(val, t: number) {
+    addPoint(val: number, t: number) {
         this._points.push({ val: val, t: t });
     }
 
@@ -78,7 +75,7 @@ export class MySpline {
             if (this._points[i].t <= t) break;
         }
 
-        if (id1 == id2) {
+        if (id1 === id2) {
             return this._points[id1].val;
         }
 

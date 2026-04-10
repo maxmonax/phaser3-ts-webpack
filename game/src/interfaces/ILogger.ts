@@ -1,6 +1,6 @@
 
 export interface ILogger {
-    logDebug(aMsg: string, aData?: any);
-    logWarn(aMsg: string, aData?: any);
-    logError(aMsg: string, aData?: any);
+    logDebug(aMsg: string, aData?: unknown): void;
+    logWarn(aMsg: string, aData?: unknown): void;
+    logError(aMsg: string, aData?: unknown): void;
 }

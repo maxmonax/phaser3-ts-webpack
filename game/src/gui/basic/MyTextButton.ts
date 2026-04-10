@@ -4,7 +4,7 @@ import { MyText } from "./MyText";
 export class MyTextButton extends MyButton {
     protected _caption: MyText;
 
-    constructor(scene, x, y, aParams: MyBtnParams) {
+    constructor(scene: Phaser.Scene, x: number, y: number, aParams: MyBtnParams) {
         super(scene, x, y, aParams);
         
         this._caption = new MyText(scene, 0, 0, 'Button',

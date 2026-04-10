@@ -14,7 +14,7 @@ enum Styles {
 }
 
 export class PreloaderScene extends Phaser.Scene {
-    private _bar: PreloaderBar;
+    private _bar!: PreloaderBar;
 
     constructor() {
         super(SceneNames.PreloaderScene);
@@ -39,7 +39,7 @@ export class PreloaderScene extends Phaser.Scene {
         }
         
         // events
-        this.load.on('progress', (value) => {
+        this.load.on('progress', (value: number) => {
             if (this._bar) this._bar.progress = value;
         }, this);
 
@@ -53,8 +53,8 @@ export class PreloaderScene extends Phaser.Scene {
         console.log('PreloaderScene create...');
 
         if (Config.PRELOADER.DRAW_DEBUG_BORDER) {
-            let rFullArea = this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW, Config.GH, 0x0, 0.1);
-            let rSafeArea = this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW_SAFE, Config.GH_SAFE, 0x0, 0.1);
+            this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW, Config.GH, 0x0, 0.1);
+            this.add.rectangle(Config.GW / 2, Config.GH / 2, Config.GW_SAFE, Config.GH_SAFE, 0x0, 0.1);
         }
 
         if (Config.PRELOADER.TAP_TO_START) {

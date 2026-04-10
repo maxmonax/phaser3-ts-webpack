@@ -106,7 +106,7 @@ export class MyMath {
      * @param max - maximum value
      * @returns Cutted value between [min..max]
      */
-    public static clamp(x, min, max): number {
+    public static clamp(x: number, min: number, max: number): number {
         return Math.min(Math.max(x, min), max);
     }
 
@@ -173,9 +173,9 @@ export class MyMath {
         let dy = 0;
         let dz = 0;
         if (typeof x1 == 'number') {
-            dx = x2 - x1;
-            dy = y2 - y1;
-            dz = z2 - z1;
+            dx = (x2 ?? 0) - x1;
+            dy = (y2 ?? 0) - (y1 ?? 0);
+            dz = (z2 ?? 0) - (z1 ?? 0);
         }
         else {
             dx = x1.x;
@@ -236,7 +236,7 @@ export class MyMath {
     /**
      * dot product of vectors (scalar product)
      */
-    public static dotVec3(a: { x, y, z }, b: { x, y, z }): number {
+    public static dotVec3(a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }): number {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
@@ -285,11 +285,11 @@ export class MyMath {
     /**
      * Projection of vector a to vector b
      */
-    public static getVec3Projection(a: { x, y, z }, b: { x, y, z }): number {
+    public static getVec3Projection(a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }): number {
         return this.dotVec3(a, b) / this.getVec3Length(b);
     }
 
-    public static isPointInTriangle(ax, ay, bx, by, cx, cy, px, py: number): boolean {
+    public static isPointInTriangle(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, px: number, py: number): boolean {
         let b0x, b0y, c0x, c0y, p0x, p0y: number;
         let m, l: number;
         let res = false;

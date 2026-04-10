@@ -43,6 +43,16 @@ module.exports = {
         }),
     ],
 
+    resolve: {
+        plugins: [
+            new TsconfigPathsPlugin({
+                baseUrl: __base,
+                configFile: path.join(__base, 'tsconfig.json')
+            })
+        ],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    },
+
     // general rules
     module: {
         rules: [
@@ -50,10 +60,7 @@ module.exports = {
             {
                 test: /\.ts$/,
                 loader: 'ts-loader',
-                exclude: /node_modules/,
-                options: {
-                    appendTsSuffixTo: [/\.vue$/]
-                }
+                exclude: /node_modules/
             },
             // images
             {
@@ -66,8 +73,9 @@ module.exports = {
             // fonts
             {
                 test: /\.(woff(2)?|ttf|otf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                type: 'asset/resource',
                 generator: {
-                    filename: 'assets/fonts/[name]-[hash:4].[ext]'
+                    filename: 'assets/fonts/[name]-[hash:4][ext]'
                 }
             }
         ]
@@ -79,8 +87,5 @@ module.exports = {
         path: path.resolve(__base, 'build'),
         clean: true
     }
-
-
-
 
 }

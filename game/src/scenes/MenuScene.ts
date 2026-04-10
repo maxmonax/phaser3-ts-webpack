@@ -6,15 +6,15 @@ import { SceneNames } from "./SceneNames";
 
 export class MenuScene extends CurtainScene {
 
-    private _dummyMain: Phaser.GameObjects.Container;
+    private _dummyMain!: Phaser.GameObjects.Container;
     // GUI
-    private _btnPlay: MyButton;
+    private _btnPlay!: MyButton;
 
     constructor() {
         super(SceneNames.MenuScene);
     }
 
-    public init(aData: any) { }
+    public init(_aData: unknown) { }
     
     public preload(): void { }
 
@@ -58,17 +58,16 @@ export class MenuScene extends CurtainScene {
 
     private onPlayBtnClick() {
         this.showCurtain(() => {
-            this.scene.start('GameScene');
+            this.scene.start(SceneNames.GameScene);
         })
     }
 
     private onSceneShutdown() {
         this.logDebug(`onSceneShutdown()...`);
+        FrontEvents.getInstance().removeListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
     }
 
-    update(allTime: number, dtMs: number) {
-        // get dt in Sec
-        let dt = dtMs * 0.001;
+    update(_allTime: number, _dtMs: number) {
     }
 
 }

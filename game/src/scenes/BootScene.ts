@@ -37,7 +37,7 @@ export class BootScene extends Phaser.Scene {
                 const getName = keys[j];
                 let qValue = MyUtils.getQueryValue(getName);
                 if (qValue != null && qValue != undefined) {
-                    listItem.onReadHandler(qValue);
+                    listItem.onReadHandler(Array.isArray(qValue) ? qValue[0] : qValue);
                 }
             }
         }

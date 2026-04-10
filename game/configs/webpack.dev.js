@@ -1,11 +1,9 @@
-const path = require('path/posix');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const path = require('path');
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 // paths
 const __base = path.resolve(__dirname, '..');
-const __src = path.resolve(__base, 'src');
 
 module.exports = merge(common, {
 
@@ -13,26 +11,16 @@ module.exports = merge(common, {
     mode: 'development',
     devtool: 'inline-source-map',
 
-    resolve: {
-        plugins: [
-            new TsconfigPathsPlugin({
-                baseUrl: __base,
-                configFile: path.join(__base, 'tsconfig.json')
-            })
-        ],
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    },
-
     // dev server
     devServer: {
         port: 9100,
-        static: './build',
+        static: path.resolve(__base, 'public'),
         hot: true,
         client: {
             overlay: true
         }
     },
-    
+
     // general rules
     module: {
         rules: [
@@ -45,10 +33,15 @@ module.exports = merge(common, {
                     // Translates CSS into CommonJS
                     "css-loader",
                     // Compiles Sass to CSS
-                    "sass-loader",
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            api: "modern",
+                        },
+                    },
                 ],
             }
         ]
     },
-    
+
 });

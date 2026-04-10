@@ -8,8 +8,9 @@ const imgSrc = './assets/images/rotate-phone-icon-white.png';
 export class OrientationAlert {
 
     private static showOrientationAlert() {
-        let divGame = document.getElementById('game');
-        let divRotate = document.getElementsByClassName(rotClassName)[0] as any;
+        const divGame = document.getElementById('game');
+        const divRotate = document.getElementsByClassName(rotClassName)[0] as HTMLElement;
+        if (!divGame) return;
         divGame.style.display = 'none';
         divRotate.style.display = 'flex';
 
@@ -29,8 +30,9 @@ export class OrientationAlert {
     }
 
     private static hideOrientationAlert() {
-        let divGame = document.getElementById('game');
-        let divRotate = document.getElementsByClassName(rotClassName)[0] as any;
+        const divGame = document.getElementById('game');
+        const divRotate = document.getElementsByClassName(rotClassName)[0] as HTMLElement;
+        if (!divGame) return;
         divGame.style.display = 'flex';
         divRotate.style.display = 'none';
     }

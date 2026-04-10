@@ -1,4 +1,4 @@
-﻿import { LogMng } from "../utils/LogMng";
+import { LogMng } from "../utils/LogMng";
 import { MyMath } from "../utils/MyMath";
 
 // aliases
@@ -11,20 +11,30 @@ export const AUDIO_LOAD_DATA = [
   { alias: AudioAlias.Click, file: 'click.mp3' },
 ];
 
+interface MusicEntry {
+  name: string;
+  mus: Phaser.Sound.BaseSound;
+}
+
 export class AudioMng {
 
   // local params
   private static readonly MUS_MAX_VOL = 1.0;
-  private static musics: any[] = []; // of { name: str, mus: Phaser.Sound }
+  private static musics: MusicEntry[] = [];
   private static enabled = true;
 
-  // global vars
-  static scene: Phaser.Scene = null;
+  // global vars — set via AudioMng.scene = this inside CurtainScene.create()
+  static scene: Phaser.Scene | null = null;
 
-  static getMusic(aName: string): any {
-    for (var i = 0; i < AudioMng.musics.length; i++) {
-      var data = AudioMng.musics[i];
-      if (data.name == aName)
+  private static getScene(): Phaser.Scene {
+    if (!AudioMng.scene) throw new Error('AudioMng: scene not initialized. Set AudioMng.scene first.');
+    return AudioMng.scene;
+  }
+
+  static getMusic(aName: string): Phaser.Sound.BaseSound | null {
+    for (let i = 0; i < AudioMng.musics.length; i++) {
+      const data = AudioMng.musics[i];
+      if (data.name === aName)
         return data.mus;
     }
     return null;
@@ -33,7 +43,7 @@ export class AudioMng {
   static getSoundFileByName(aAlias: string): string {
     for (let i = 0; i < AUDIO_LOAD_DATA.length; i++) {
       const element = AUDIO_LOAD_DATA[i];
-      if (element.alias == aAlias) return element.file;
+      if (element.alias === aAlias) return element.file;
     }
     return '';
   }
@@ -41,21 +51,16 @@ export class AudioMng {
   static changeMusicVol(aName: string, aVol: number, aTweenScene: Phaser.Scene, aDuration = 500) {
     if (aVol > AudioMng.MUS_MAX_VOL) aVol = AudioMng.MUS_MAX_VOL;
     for (let i = 0; i < AudioMng.musics.length; i++) {
-      let data = AudioMng.musics[i];
-      if (data.name == aName) {
-        let music: any = data.mus;
-        let twObj = { val: music.volume };
+      const data = AudioMng.musics[i];
+      if (data.name === aName) {
+        const music = data.mus as Phaser.Sound.WebAudioSound | Phaser.Sound.HTML5AudioSound;
+        const twObj = { val: music.volume };
         aTweenScene.tweens.add({
           targets: twObj,
           val: aVol,
-          // targets: music,
-          // volume: aVol,
           duration: aDuration,
           ease: Phaser.Math.Easing.Linear,
-          // callbackScope: SndMng,
-          onUpdate: (atr1) => {
-            // let vol = aVolFrom + (aVol - aVolFrom) * twObj.t;
-            // music.setVolume(twObj.val);
+          onUpdate: () => {
             music.volume = twObj.val;
           }
         });
@@ -63,21 +68,22 @@ export class AudioMng {
     }
   }
 
-  static stopMusicById(id: number, aVol: number = 0, aDuration: number = 500) {
+  static stopMusicById(id: number, _aVol: number = 0, aDuration: number = 500) {
     try {
-      let data = AudioMng.musics[id];
-      let music = data.mus;
-      let volFrom = music.volume;
+      const scene = AudioMng.getScene();
+      const data = AudioMng.musics[id];
+      const music = data.mus as Phaser.Sound.WebAudioSound | Phaser.Sound.HTML5AudioSound;
+      const volFrom = music.volume;
 
-      let twObj = { t: 1 };
-      AudioMng.scene.tweens.add({
+      const twObj = { t: 1 };
+      scene.tweens.add({
         targets: twObj,
         t: 0,
         duration: aDuration,
         ease: "Linear.None",
         callbackScope: this,
         onUpdate: () => {
-          let vol = volFrom * twObj.t;
+          const vol = volFrom * twObj.t;
           music.setVolume(vol);
         },
         onComplete: () => {
@@ -86,21 +92,21 @@ export class AudioMng {
         }
       });
     } catch (e) {
-      LogMng.error('SndMng.stopMusicById: ' + e);
+      LogMng.error('AudioMng.stopMusicById: ' + e);
     }
   }
 
   static stopMusicByName(aName: string, aVol: number = 0, aDuration: number = 500) {
     for (let i = AudioMng.musics.length - 1; i >= 0; i--) {
-      let data = AudioMng.musics[i];
-      if (data.name == aName) {
+      const data = AudioMng.musics[i];
+      if (data.name === aName) {
         AudioMng.stopMusicById(i, aVol, aDuration);
       }
     }
   }
 
-  static stopAllMusic(aVol: number = 0, aDuration: number = 500) {
-    for (var i = AudioMng.musics.length - 1; i >= 0; i--) {
+  static stopAllMusic(_aVol: number = 0, _aDuration: number = 500) {
+    for (let i = AudioMng.musics.length - 1; i >= 0; i--) {
       AudioMng.stopMusicById(i);
     }
   }
@@ -121,53 +127,47 @@ export class AudioMng {
 
   static playMusic(aName: string, aVolFrom = 0, aVolEnd = 1, aDuration: number = 500) {
     if (!AudioMng.enabled) return;
+    const scene = AudioMng.getScene();
     if (aVolEnd > AudioMng.MUS_MAX_VOL) aVolEnd = AudioMng.MUS_MAX_VOL;
-    // create music
-    let music: any = AudioMng.scene.sound.add(aName, {
+    const music = scene.sound.add(aName, {
       volume: aVolFrom,
       loop: true
-    });
+    }) as Phaser.Sound.WebAudioSound | Phaser.Sound.HTML5AudioSound;
     music.play();
-    let twObj = { t: 0 };
-    AudioMng.scene.tweens.add({
+    const twObj = { t: 0 };
+    scene.tweens.add({
       targets: twObj,
       t: 1,
       duration: aDuration,
       ease: Phaser.Math.Easing.Linear,
       callbackScope: AudioMng,
       onUpdate: () => {
-        let vol = aVolFrom + (aVolEnd - aVolFrom) * twObj.t;
+        const vol = aVolFrom + (aVolEnd - aVolFrom) * twObj.t;
         music.setVolume(vol);
       }
     });
     AudioMng.musics.push({ name: aName, mus: music });
   }
 
-  static playSfx(aName: string, aVol = 1, aDelay = 0): any {
-    if (!AudioMng.enabled) return;
-    var snd = AudioMng.scene.sound.add(aName, {
-      volume: aVol
-    });
+  static playSfx(aName: string, aVol = 1, aDelay = 0): Phaser.Sound.BaseSound | undefined {
+    if (!AudioMng.enabled) return undefined;
+    const scene = AudioMng.getScene();
+    const snd = scene.sound.add(aName, { volume: aVol });
     if (aDelay > 0) {
-      setTimeout(() => {
-        snd.play();
-      }, aDelay);
-    }
-    else {
+      setTimeout(() => { snd.play(); }, aDelay);
+    } else {
       snd.play();
     }
     return snd;
   }
 
-  static playRandomSfx(aNames: string[], aVol = 1): any {
-    if (!AudioMng.enabled) return;
-    let name = aNames[MyMath.randomIntInRange(0, aNames.length - 1)];
-    // let snd = game.add.audio(name, aVol);
-    // snd.play();
-    return null;
+  static playRandomSfx(aNames: string[], aVol = 1): Phaser.Sound.BaseSound | undefined {
+    if (!AudioMng.enabled) return undefined;
+    const name = aNames[MyMath.randomIntInRange(0, aNames.length - 1)];
+    return AudioMng.playSfx(name, aVol);
   }
 
-  static update(dt: number) {
+  static update(_dt: number) {
 
   }
 

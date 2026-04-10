@@ -7,14 +7,12 @@ export class ColorUtils {
      * @param aHexColorStr Hex string (#FFAA22 or #FA2)
      * @returns RGB { r, g, b }
      */
-    public static strHexToRGB(aHexColorStr: string): { r: number, g: number, b: number } {
-        let newHex = aHexColorStr.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => '#' + r + r + g + g + b + b);
-        let res: number[] = newHex.substring(1).match(/.{2}/g).map(x => parseInt(x, 16));
-        return res ? {
-            r: res[0],
-            g: res[1],
-            b: res[2]
-        } : null;
+    public static strHexToRGB(aHexColorStr: string): { r: number, g: number, b: number } | null {
+        const newHex = aHexColorStr.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (_m, r, g, b) => '#' + r + r + g + g + b + b);
+        const match = newHex.substring(1).match(/.{2}/g);
+        if (!match) return null;
+        const res = match.map(x => parseInt(x, 16));
+        return { r: res[0], g: res[1], b: res[2] };
     }
 
     /**
