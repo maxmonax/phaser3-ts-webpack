@@ -1,0 +1,10 @@
+{
+    "folders": [
+        { "name": "Game Source", "path": "./game" },
+        { "name": "Assets", "path": "./assets" }
+    ],
+    "settings": {
+        // настройки VSCode только для этого воркспейса
+        // "editor.fontSize": 14
+    }
+}
