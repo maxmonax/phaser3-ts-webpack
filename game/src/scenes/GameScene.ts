@@ -1,12 +1,13 @@
+import { AudioMng } from "@/audio/AudioMng";
 import { Config } from "../data/Config";
 import { Params } from "../data/Params";
 import { FrontEvents } from "../events/FrontEvents";
-import { CurtainScene } from "./CurtainScene";
 import { SceneNames } from "./SceneNames";
 import { MyContainer } from "@/gui/basic/MyContainer";
 import { MyButton } from "@/gui/basic/MyButton";
+import { TransitionScene } from "./TransitionScene";
 
-export class GameScene extends CurtainScene {
+export class GameScene extends Phaser.Scene {
     
     private _dummyGame!: MyContainer;
     private _dummyGui!: MyContainer;
@@ -19,6 +20,7 @@ export class GameScene extends CurtainScene {
     }
 
     public create(): void {
+        AudioMng.init(this);
 
         this._dummyGame = new MyContainer(this, 0, 0);
         this.add.existing(this._dummyGame);
@@ -58,8 +60,6 @@ export class GameScene extends CurtainScene {
         }, this);
         this.onResize();
 
-        super.create();
-
     }
 
     private onResize() {
@@ -73,9 +73,7 @@ export class GameScene extends CurtainScene {
     }
 
     private onBackClick() {
-        this.showCurtain(() => {
-            this.scene.start(SceneNames.MenuScene);
-        });
+        TransitionScene.change(this, SceneNames.MenuScene);
     }
     
     update(_allTime: number, _dtMs: number) {

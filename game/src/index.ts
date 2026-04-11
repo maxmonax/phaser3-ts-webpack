@@ -6,6 +6,7 @@ import { BootScene } from "./scenes/BootScene";
 import { GameScene } from "./scenes/GameScene";
 import { PreloaderScene } from "./scenes/PreloaderScene";
 import { MenuScene } from "./scenes/MenuScene";
+import { TransitionScene } from "./scenes/TransitionScene";
 import { FrontEvents } from "./events/FrontEvents";
 import { OrientationAlert } from "./scaling/OrientationAlert";
 // for spine
@@ -35,7 +36,7 @@ function startGame(aGameParams: {
         // plugins: {
             // scene: [{ key: 'SpinePlugin', plugin: window['SpinePlugin'], mapping: 'spine' }]
         // },
-        scene: [BootScene, PreloaderScene, MenuScene, GameScene],
+        scene: [BootScene, PreloaderScene, MenuScene, GameScene, TransitionScene],
     });
 }
 

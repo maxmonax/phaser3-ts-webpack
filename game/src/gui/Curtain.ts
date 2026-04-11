@@ -1,4 +1,3 @@
-import { Config } from "@/data/Config";
 import { MyContainer } from "./basic/MyContainer";
 import { MyGraphics } from "./basic/MyGraphics";
 
@@ -13,11 +12,11 @@ export class Curtain extends MyContainer {
         y?: number,
         color?: number
     }) {
-        super(aParams.scene, aParams.x, aParams.y);
+        super(aParams.scene, aParams.x ?? 0, aParams.y ?? 0);
 
         this._curtain = new MyGraphics(this.scene, {
             fillStyle: {
-                color: aParams.color
+                color: aParams.color ?? 0x111111
             },
             lineStyle: {
                 alpha: 0
@@ -25,9 +24,9 @@ export class Curtain extends MyContainer {
         });
 
         let size = {
-            w: Config.GW,
-            h: Config.GH
-        }
+            w: aParams.w,
+            h: aParams.h
+        };
 
         this._curtain.fillRect(-size.w / 2, -size.h / 2, size.w, size.h);
         let hitArea = new Phaser.Geom.Rectangle(-size.w / 2, -size.h / 2, size.w, size.h);
@@ -41,11 +40,13 @@ export class Curtain extends MyContainer {
     showCurtain(aParams?: {
         dur?: number,
         alpha?: number,
+        ease?: string | ((v: number) => number),
         cb?: () => void,
         ctx?: object
     }) {
-        let dur = aParams?.dur || 0;
-        let alpha = aParams?.alpha || 1;
+        let dur = aParams?.dur ?? 0;
+        let alpha = aParams?.alpha ?? 1;
+        let ease = aParams?.ease ?? Phaser.Math.Easing.Sine.InOut;
         let cb = aParams?.cb;
         let ctx = aParams?.ctx;
         
@@ -56,7 +57,7 @@ export class Curtain extends MyContainer {
                 targets: this._curtain,
                 alpha: alpha,
                 duration: dur,
-                ease: Phaser.Math.Easing.Sine.InOut,
+                ease,
                 onStart: () => {
                     this._curtain.visible = true;
                 },
@@ -73,14 +74,14 @@ export class Curtain extends MyContainer {
         }
     }
 
-    hideCurtain(aDur = 0, aCallback?: () => void, aCtx?: object) {
+    hideCurtain(aDur = 0, aCallback?: () => void, aCtx?: object, aEase: string | ((v: number) => number) = Phaser.Math.Easing.Sine.InOut) {
         if (aDur > 0) {
             this.scene.tweens.killTweensOf(this._curtain);
             this.scene.tweens.add({
                 targets: this._curtain,
                 alpha: 0,
                 duration: aDur,
-                ease: Phaser.Math.Easing.Sine.InOut,
+                ease: aEase,
                 onComplete: () => {
                     this._curtain.visible = false;
                     if (aCallback) aCallback.call(aCtx);
@@ -89,6 +90,7 @@ export class Curtain extends MyContainer {
         }
         else {
             this._curtain.visible = false;
+            if (aCallback) aCallback.call(aCtx);
         }
     }
 

@@ -1,10 +1,12 @@
+import { AudioMng } from "@/audio/AudioMng";
 import { MyButton } from "@/gui/basic/MyButton";
 import { Config } from "../data/Config";
 import { FrontEvents } from "../events/FrontEvents";
-import { CurtainScene } from "./CurtainScene";
+import { LogMng } from "../utils/LogMng";
 import { SceneNames } from "./SceneNames";
+import { TransitionScene } from "./TransitionScene";
 
-export class MenuScene extends CurtainScene {
+export class MenuScene extends Phaser.Scene {
 
     private _dummyMain!: Phaser.GameObjects.Container;
     // GUI
@@ -19,6 +21,7 @@ export class MenuScene extends CurtainScene {
     public preload(): void { }
 
     public create(): void {
+        AudioMng.init(this);
 
         this._dummyMain = this.add.container(0, 0);
 
@@ -34,8 +37,6 @@ export class MenuScene extends CurtainScene {
         
         FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
         this.onResize();
-
-        super.create();
 
         // global music example
         // if (!Params.music) {
@@ -57,13 +58,11 @@ export class MenuScene extends CurtainScene {
     }
 
     private onPlayBtnClick() {
-        this.showCurtain(() => {
-            this.scene.start(SceneNames.GameScene);
-        })
+        TransitionScene.change(this, SceneNames.GameScene);
     }
 
     private onSceneShutdown() {
-        this.logDebug(`onSceneShutdown()...`);
+        LogMng.debug(`${SceneNames.MenuScene}: onSceneShutdown()...`);
         FrontEvents.getInstance().removeListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
     }
 
