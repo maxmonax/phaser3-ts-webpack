@@ -4,8 +4,14 @@ export enum AudioAlias {
     Click = "Click",
 }
 
-export const AUDIO_LOAD_DATA: ReadonlyArray<{ alias: AudioAlias, file: string }> = [
-    { alias: AudioAlias.Click, file: "click.mp3" },
+export type AudioLoadData = {
+    alias: AudioAlias;
+    file: string;
+    maxInstances?: number;
+};
+
+export const AUDIO_LOAD_DATA: ReadonlyArray<AudioLoadData> = [
+    { alias: AudioAlias.Click, file: "click.mp3", maxInstances: 1 },
 ];
 
 type ManagedSound = Phaser.Sound.BaseSound & {
@@ -17,6 +23,7 @@ type MusicEntry = {
     key: string;
     sound: ManagedSound;
     baseVolume: number;
+    currentBaseVolume: number;
     fadeTween?: Phaser.Tweens.Tween;
 };
 
@@ -29,6 +36,12 @@ export type PlayMusicOptions = {
     config?: Phaser.Types.Sound.SoundConfig;
 };
 
+export type CrossfadeMusicOptions = PlayMusicOptions & {
+    duration?: number;
+    stopFrom?: boolean;
+    fromFadeTo?: number;
+};
+
 export type StopMusicOptions = {
     fadeDuration?: number;
     fadeTo?: number;
@@ -37,7 +50,16 @@ export type StopMusicOptions = {
 
 export type PlaySfxOptions = Phaser.Types.Sound.SoundConfig & {
     force?: boolean;
+    maxInstances?: number;
     marker?: string;
+};
+
+export type DuckMusicOptions = {
+    volume?: number;
+    duration?: number;
+    fadeOut?: number;
+    fadeIn?: number;
+    hold?: number;
 };
 
 export class AudioMng {
@@ -51,9 +73,18 @@ export class AudioMng {
     private static musicEnabled = true;
     private static sfxEnabled = true;
     private static musicVolume = 1;
+    private static musicDuckVolume = 1;
     private static sfxVolume = 1;
+    private static musicVolumeTween?: Phaser.Tweens.Tween;
+    private static duckTween?: Phaser.Tweens.Tween;
+    private static duckTimer?: Phaser.Time.TimerEvent;
     private static musics = new Map<string, MusicEntry>();
     private static activeSfx = new Map<string, Set<Phaser.Sound.BaseSound>>();
+    private static sfxMaxInstances = new Map<string, number>(
+        AUDIO_LOAD_DATA
+            .filter((item) => item.maxInstances !== undefined)
+            .map((item) => [item.alias, AudioMng.normalizeMaxInstances(item.maxInstances!)])
+    );
 
     static init(scene: Phaser.Scene): void {
         AudioMng.scene = scene;
@@ -86,34 +117,35 @@ export class AudioMng {
         const volume = AudioMng.clampVolume(options.volume ?? AudioMng.DEFAULT_MUSIC_VOLUME);
         const fadeFrom = AudioMng.clampVolume(options.fadeFrom ?? 0);
         const fadeMs = Math.max(0, options.fadeDuration ?? AudioMng.DEFAULT_MUSIC_FADE);
-        const targetVolume = AudioMng.getEffectiveMusicVolume(volume);
         const startVolume = AudioMng.getEffectiveMusicVolume(fadeFrom);
         const loop = options.loop ?? true;
         const existing = AudioMng.musics.get(name);
 
         if (existing) {
-            existing.baseVolume = volume;
             if (options.restart) {
+                existing.currentBaseVolume = fadeFrom;
                 existing.sound.stop();
                 existing.sound.play({ ...options.config, loop, volume: startVolume });
             }
             else if (!existing.sound.isPlaying) {
+                existing.currentBaseVolume = fadeFrom;
                 existing.sound.play({ ...options.config, loop, volume: startVolume });
             }
-            AudioMng.fadeMusic(existing, targetVolume, fadeMs);
+            AudioMng.fadeMusic(existing, volume, fadeMs);
             return existing.sound;
         }
 
         const sound = scene.sound.add(name, {
             ...options.config,
             loop,
-            volume: fadeMs > 0 ? startVolume : targetVolume,
+            volume: AudioMng.getEffectiveMusicVolume(fadeMs > 0 ? fadeFrom : volume),
         }) as ManagedSound;
 
         const entry: MusicEntry = {
             key: name,
             sound,
             baseVolume: volume,
+            currentBaseVolume: fadeMs > 0 ? fadeFrom : volume,
         };
 
         sound.once(Phaser.Sound.Events.DESTROY, () => AudioMng.removeMusicEntry(name, sound));
@@ -121,7 +153,7 @@ export class AudioMng {
         AudioMng.musics.set(name, entry);
 
         if (fadeMs > 0 && fadeFrom !== volume) {
-            AudioMng.fadeMusic(entry, targetVolume, fadeMs);
+            AudioMng.fadeMusic(entry, volume, fadeMs);
         }
 
         return sound;
@@ -136,6 +168,30 @@ export class AudioMng {
         const destroy = options.destroy ?? true;
 
         AudioMng.stopMusicEntry(entry, fadeMs, fadeTo, destroy);
+    }
+
+    static crossfadeMusic(fromName: string, toName: string, options: CrossfadeMusicOptions = {}): Phaser.Sound.BaseSound | null {
+        const duration = Math.max(0, options.duration ?? options.fadeDuration ?? AudioMng.DEFAULT_MUSIC_FADE);
+        const fromFadeTo = AudioMng.clampVolume(options.fromFadeTo ?? 0);
+        const stopFrom = options.stopFrom ?? true;
+
+        const music = AudioMng.playMusic(toName, {
+            ...options,
+            fadeFrom: options.fadeFrom ?? 0,
+            fadeDuration: duration,
+        });
+
+        if (stopFrom) {
+            AudioMng.stopMusic(fromName, {
+                fadeDuration: duration,
+                fadeTo: fromFadeTo,
+            });
+        }
+        else {
+            AudioMng.fadeMusicVolume(fromName, fromFadeTo, duration);
+        }
+
+        return music;
     }
 
     static stopMusicByName(name: string, volume = 0, duration = AudioMng.DEFAULT_MUSIC_FADE): void {
@@ -161,15 +217,11 @@ export class AudioMng {
     static fadeMusicVolume(name: string, volume: number, duration = AudioMng.DEFAULT_MUSIC_FADE): void {
         const entry = AudioMng.musics.get(name);
         if (!entry) return;
-        entry.baseVolume = AudioMng.clampVolume(volume);
-        AudioMng.fadeMusic(entry, AudioMng.getEffectiveMusicVolume(entry.baseVolume), Math.max(0, duration));
+        AudioMng.fadeMusic(entry, AudioMng.clampVolume(volume), Math.max(0, duration));
     }
 
     static setMusicVolume(volume: number, fadeDuration = 0): void {
-        AudioMng.musicVolume = AudioMng.clampVolume(volume);
-        for (const entry of AudioMng.musics.values()) {
-            AudioMng.fadeMusic(entry, AudioMng.getEffectiveMusicVolume(entry.baseVolume), Math.max(0, fadeDuration));
-        }
+        AudioMng.tweenMusicVolume(AudioMng.clampVolume(volume), Math.max(0, fadeDuration));
     }
 
     static getMusicVolume(): number {
@@ -182,6 +234,40 @@ export class AudioMng {
 
     static getSfxVolume(): number {
         return AudioMng.sfxVolume;
+    }
+
+    static setSfxMaxInstances(name: string, maxInstances: number): void {
+        AudioMng.sfxMaxInstances.set(name, AudioMng.normalizeMaxInstances(maxInstances));
+    }
+
+    static getSfxMaxInstances(name: string): number {
+        return AudioMng.sfxMaxInstances.get(name) ?? 1;
+    }
+
+    static clearSfxMaxInstances(name: string): void {
+        AudioMng.sfxMaxInstances.delete(name);
+    }
+
+    static duckMusic(options: DuckMusicOptions = {}): void {
+        const duckVolume = AudioMng.clampVolume(options.volume ?? 0.35);
+        const fadeOut = Math.max(0, options.fadeOut ?? options.duration ?? 150);
+        const fadeIn = Math.max(0, options.fadeIn ?? options.duration ?? 350);
+        const hold = Math.max(0, options.hold ?? 0);
+
+        AudioMng.stopDuckTweens();
+
+        AudioMng.tweenDuckVolume(duckVolume, fadeOut, () => {
+            if (hold > 0) {
+                AudioMng.duckTimer = AudioMng.getScene().time.delayedCall(hold, () => {
+                    AudioMng.restoreMusicDuck(fadeIn);
+                });
+            }
+        });
+    }
+
+    static restoreMusicDuck(fadeDuration = 350): void {
+        AudioMng.stopDuckTweens();
+        AudioMng.tweenDuckVolume(1, Math.max(0, fadeDuration));
     }
 
     static setMusicEnabled(enabled: boolean, fadeDuration = AudioMng.DEFAULT_MUSIC_FADE): void {
@@ -221,10 +307,11 @@ export class AudioMng {
 
     static playSfxEx(name: string, options: PlaySfxOptions = {}): Phaser.Sound.BaseSound | undefined {
         if (!AudioMng.sfxEnabled) return undefined;
-        if (!options.force && AudioMng.isSfxPlaying(name)) return undefined;
 
         const scene = AudioMng.getScene();
-        const { force: _force, marker, ...config } = options;
+        const { force = false, marker, maxInstances, ...config } = options;
+        if (!force && !AudioMng.canPlaySfx(name, maxInstances)) return undefined;
+
         const sfxConfig = {
             ...config,
             volume: AudioMng.clampVolume((config.volume ?? 1) * AudioMng.sfxVolume),
@@ -257,6 +344,10 @@ export class AudioMng {
         if (!sounds) return false;
 
         return sounds.size > 0;
+    }
+
+    static getSfxInstancesCount(name: string): number {
+        return AudioMng.activeSfx.get(name)?.size ?? 0;
     }
 
     static stopSfx(name: string): void {
@@ -304,6 +395,8 @@ export class AudioMng {
 
     private static fadeMusic(entry: MusicEntry, volume: number, duration: number, onComplete?: () => void): void {
         const scene = AudioMng.getScene();
+        const baseVolume = AudioMng.clampVolume(volume);
+        entry.baseVolume = baseVolume;
 
         if (entry.fadeTween) {
             entry.fadeTween.stop();
@@ -311,30 +404,33 @@ export class AudioMng {
         }
 
         if (duration <= 0) {
-            entry.sound.setVolume(volume);
+            entry.currentBaseVolume = baseVolume;
+            entry.sound.setVolume(AudioMng.getEffectiveMusicVolume(entry.currentBaseVolume));
             onComplete?.();
             return;
         }
 
-        const tweenData = { volume: entry.sound.volume };
+        const tweenData = { volume: entry.currentBaseVolume };
         entry.fadeTween = scene.tweens.add({
             targets: tweenData,
-            volume,
+            volume: baseVolume,
             duration,
             ease: Phaser.Math.Easing.Linear,
             onUpdate: () => {
-                entry.sound.setVolume(tweenData.volume);
+                entry.currentBaseVolume = tweenData.volume;
+                entry.sound.setVolume(AudioMng.getEffectiveMusicVolume(entry.currentBaseVolume));
             },
             onComplete: () => {
                 entry.fadeTween = undefined;
-                entry.sound.setVolume(volume);
+                entry.currentBaseVolume = baseVolume;
+                entry.sound.setVolume(AudioMng.getEffectiveMusicVolume(entry.currentBaseVolume));
                 onComplete?.();
             },
         });
     }
 
     private static stopMusicEntry(entry: MusicEntry, fadeDuration: number, fadeTo: number, destroy: boolean): void {
-        AudioMng.fadeMusic(entry, AudioMng.getEffectiveMusicVolume(fadeTo), Math.max(0, fadeDuration), () => {
+        AudioMng.fadeMusic(entry, fadeTo, Math.max(0, fadeDuration), () => {
             entry.sound.stop();
             AudioMng.musics.delete(entry.key);
             if (destroy) entry.sound.destroy();
@@ -385,7 +481,105 @@ export class AudioMng {
     }
 
     private static getEffectiveMusicVolume(baseVolume: number): number {
-        return AudioMng.clampVolume(AudioMng.clampVolume(baseVolume) * AudioMng.musicVolume);
+        return AudioMng.clampVolume(AudioMng.clampVolume(baseVolume) * AudioMng.musicVolume * AudioMng.musicDuckVolume);
+    }
+
+    private static refreshMusicVolumes(duration: number): void {
+        if (duration <= 0) {
+            for (const entry of AudioMng.musics.values()) {
+                entry.sound.setVolume(AudioMng.getEffectiveMusicVolume(entry.currentBaseVolume));
+            }
+            return;
+        }
+
+        for (const entry of AudioMng.musics.values()) {
+            AudioMng.fadeMusic(entry, entry.baseVolume, duration);
+        }
+    }
+
+    private static canPlaySfx(name: string, maxInstances?: number): boolean {
+        const limit = maxInstances === undefined
+            ? AudioMng.getSfxMaxInstances(name)
+            : AudioMng.normalizeMaxInstances(maxInstances);
+
+        if (limit < 1) {
+            return false;
+        }
+
+        return AudioMng.getSfxInstancesCount(name) < limit;
+    }
+
+    private static stopDuckTweens(): void {
+        if (AudioMng.duckTween) {
+            AudioMng.duckTween.stop();
+            AudioMng.duckTween = undefined;
+        }
+
+        if (AudioMng.duckTimer) {
+            AudioMng.duckTimer.remove(false);
+            AudioMng.duckTimer = undefined;
+        }
+    }
+
+    private static tweenMusicVolume(volume: number, duration: number): void {
+        if (AudioMng.musicVolumeTween) {
+            AudioMng.musicVolumeTween.stop();
+            AudioMng.musicVolumeTween = undefined;
+        }
+
+        if (duration <= 0) {
+            AudioMng.musicVolume = volume;
+            AudioMng.refreshMusicVolumes(0);
+            return;
+        }
+
+        const tweenData = { volume: AudioMng.musicVolume };
+        AudioMng.musicVolumeTween = AudioMng.getScene().tweens.add({
+            targets: tweenData,
+            volume,
+            duration,
+            ease: Phaser.Math.Easing.Linear,
+            onUpdate: () => {
+                AudioMng.musicVolume = tweenData.volume;
+                AudioMng.refreshMusicVolumes(0);
+            },
+            onComplete: () => {
+                AudioMng.musicVolumeTween = undefined;
+                AudioMng.musicVolume = volume;
+                AudioMng.refreshMusicVolumes(0);
+            },
+        });
+    }
+
+    private static tweenDuckVolume(volume: number, duration: number, onComplete?: () => void): void {
+        if (duration <= 0) {
+            AudioMng.musicDuckVolume = volume;
+            AudioMng.refreshMusicVolumes(0);
+            onComplete?.();
+            return;
+        }
+
+        const tweenData = { volume: AudioMng.musicDuckVolume };
+        AudioMng.duckTween = AudioMng.getScene().tweens.add({
+            targets: tweenData,
+            volume,
+            duration,
+            ease: Phaser.Math.Easing.Linear,
+            onUpdate: () => {
+                AudioMng.musicDuckVolume = tweenData.volume;
+                AudioMng.refreshMusicVolumes(0);
+            },
+            onComplete: () => {
+                AudioMng.duckTween = undefined;
+                AudioMng.musicDuckVolume = volume;
+                AudioMng.refreshMusicVolumes(0);
+                onComplete?.();
+            },
+        });
+    }
+
+    private static normalizeMaxInstances(maxInstances: number): number {
+        return Math.max(1, Math.floor(maxInstances));
     }
 
 }
