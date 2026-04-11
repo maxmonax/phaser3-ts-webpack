@@ -24,7 +24,7 @@ export class CurtainScene extends Phaser.Scene implements ILogger {
     }
 
     public create(aIsGraphicsCurtain = true): void {
-        AudioMng.scene = this;
+        AudioMng.init(this);
         this._isGraphicsCurtain = aIsGraphicsCurtain;
         this.initCurtains();
         this.hideCurtain();
