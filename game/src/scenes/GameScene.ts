@@ -1,13 +1,13 @@
 import { AudioMng } from "@/audio/AudioMng";
 import { Config } from "../data/Config";
 import { Params } from "../data/Params";
-import { FrontEvents } from "../events/FrontEvents";
 import { SceneNames } from "./SceneNames";
 import { MyContainer } from "@/gui/basic/MyContainer";
 import { MyButton } from "@/gui/basic/MyButton";
 import { TransitionScene } from "./TransitionScene";
+import { BaseScene } from "./BaseScene";
 
-export class GameScene extends Phaser.Scene {
+export class GameScene extends BaseScene {
     
     private _dummyGame!: MyContainer;
     private _dummyGui!: MyContainer;
@@ -54,10 +54,7 @@ export class GameScene extends Phaser.Scene {
         // this.input.on('drag', this.onDrag, this);
         // this.input.on('dragend', this.onDragEnd, this);
         
-        FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
-        this.events.once('shutdown', () => {
-            FrontEvents.getInstance().removeListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
-        }, this);
+        this.registerResize(this.onResize);
         this.onResize();
 
     }

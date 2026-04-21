@@ -1,12 +1,12 @@
 import { AudioMng } from "@/audio/AudioMng";
 import { MyButton } from "@/gui/basic/MyButton";
 import { Config } from "../data/Config";
-import { FrontEvents } from "../events/FrontEvents";
 import { LogMng } from "../utils/LogMng";
 import { SceneNames } from "./SceneNames";
 import { TransitionScene } from "./TransitionScene";
+import { BaseScene } from "./BaseScene";
 
-export class MenuScene extends Phaser.Scene {
+export class MenuScene extends BaseScene {
 
     private _dummyMain!: Phaser.GameObjects.Container;
     // GUI
@@ -34,8 +34,8 @@ export class MenuScene extends Phaser.Scene {
         this._dummyMain.add(this._btnPlay);
         
         this.events.once('shutdown', this.onSceneShutdown, this);
-        
-        FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
+
+        this.registerResize(this.onResize);
         this.onResize();
 
         // global music example
@@ -63,7 +63,6 @@ export class MenuScene extends Phaser.Scene {
 
     private onSceneShutdown() {
         LogMng.debug(`${SceneNames.MenuScene}: onSceneShutdown()...`);
-        FrontEvents.getInstance().removeListener(FrontEvents.EVENT_WINDOW_RESIZE, this.onResize, this);
     }
 
     update(_allTime: number, _dtMs: number) {
