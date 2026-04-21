@@ -25,7 +25,7 @@ module.exports = merge(common, {
     },
 
     output: {
-        filename: '[name].[contenthash:8].js',
+        filename: '[name].[contenthash:4].js',
         path: path.resolve(__base, 'build'),
         clean: true
     },
@@ -61,6 +61,18 @@ module.exports = merge(common, {
         minimizer: [
             '...',
             new CssMinimizerPlugin()
-        ]
+        ],
+        splitChunks: {
+            chunks: 'all',
+            cacheGroups: {
+                phaser: {
+                    test: /[\\/]node_modules[\\/]phaser[\\/]/,
+                    name: 'phaser',
+                    filename: 'js/phaser.[contenthash:4].js',
+                    priority: 20,
+                    reuseExistingChunk: true,
+                },
+            },
+        },
     }
 });
