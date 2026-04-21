@@ -29,6 +29,7 @@ export class GameScene extends BaseScene {
         this.add.existing(this._dummyGui);
 
         this._btnBack = new MyButton(this, 0, 80, {
+            texture: 'game',
             frame: 'btnBack',
             onClick: this.onBackClick,
             context: this
