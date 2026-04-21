@@ -37,6 +37,30 @@ export class Curtain extends MyContainer {
 
     }
 
+    private _fadeTo(
+        alpha: number,
+        duration: number,
+        ease: string | ((v: number) => number),
+        onStart?: () => void,
+        onComplete?: () => void
+    ): void {
+        if (duration > 0) {
+            this.scene.tweens.killTweensOf(this._curtain);
+            this.scene.tweens.add({
+                targets: this._curtain,
+                alpha,
+                duration,
+                ease,
+                onStart,
+                onComplete
+            });
+        } else {
+            onStart?.();
+            this._curtain.alpha = alpha;
+            onComplete?.();
+        }
+    }
+
     showCurtain(aParams?: {
         dur?: number,
         alpha?: number,
@@ -44,54 +68,27 @@ export class Curtain extends MyContainer {
         cb?: () => void,
         ctx?: object
     }) {
-        let dur = aParams?.dur ?? 0;
-        let alpha = aParams?.alpha ?? 1;
-        let ease = aParams?.ease ?? Phaser.Math.Easing.Sine.InOut;
-        let cb = aParams?.cb;
-        let ctx = aParams?.ctx;
-        
-        if (dur > 0) {
-            this.scene.tweens.killTweensOf(this._curtain);
-            this._curtain.alpha = 0;
-            this.scene.tweens.add({
-                targets: this._curtain,
-                alpha: alpha,
-                duration: dur,
-                ease,
-                onStart: () => {
-                    this._curtain.visible = true;
-                },
-                onComplete: () => {
-                    if (cb) cb.call(ctx);
-                }
-            });
-        }
-        else {
-            this._curtain.alpha = alpha;
-            this._curtain.visible = true;
-            if (cb) cb.call(ctx);
+        const dur = aParams?.dur ?? 0;
+        const alpha = aParams?.alpha ?? 1;
+        const ease = aParams?.ease ?? Phaser.Math.Easing.Sine.InOut;
+        const cb = aParams?.cb;
+        const ctx = aParams?.ctx;
 
-        }
+        this._curtain.alpha = 0;
+        this._fadeTo(alpha, dur, ease,
+            () => { this._curtain.visible = true; },
+            () => { if (cb) cb.call(ctx); }
+        );
     }
 
     hideCurtain(aDur = 0, aCallback?: () => void, aCtx?: object, aEase: string | ((v: number) => number) = Phaser.Math.Easing.Sine.InOut) {
-        if (aDur > 0) {
-            this.scene.tweens.killTweensOf(this._curtain);
-            this.scene.tweens.add({
-                targets: this._curtain,
-                alpha: 0,
-                duration: aDur,
-                ease: aEase,
-                onComplete: () => {
-                    this._curtain.visible = false;
-                    if (aCallback) aCallback.call(aCtx);
-                }
-            });
-        }
-        else {
-            this._curtain.visible = false;
-            if (aCallback) aCallback.call(aCtx);
-        }
+        this._fadeTo(0, aDur, aEase,
+            undefined,
+            () => {
+                this._curtain.visible = false;
+                if (aCallback) aCallback.call(aCtx);
+            }
+        );
     }
 
 }

@@ -3,7 +3,13 @@ import { MyContainer } from "./MyContainer";
 import { MyImage } from "./MyImage";
 import { AudioAlias } from "@/data/AudioData";
 
-export type MyBtnParams = {
+export type ButtonAnimConfig = {
+    overDuration?: number;
+    hoverScaleFactor?: number;
+    clickScaleFactor?: number;
+};
+
+export type MyBtnParams = ButtonAnimConfig & {
     texture?: string,
     frame?: string,
     frameOn?: string,
@@ -17,7 +23,6 @@ export type MyBtnParams = {
         y: integer,
     },
     scale?: number,
-    hoverScaleFactor?: number,
     isHoverAnim?: boolean,
     clickScale?: boolean,
     audioClickAlias?: string,
@@ -29,7 +34,9 @@ const DEFAULT: MyBtnParams = {
     texture: '',
     scale: 1,
     isHoverAnim: true,
+    overDuration: 200,
     hoverScaleFactor: 1.1,
+    clickScaleFactor: 0.95,
     clickScale: true,
     audioClickAlias: AudioAlias.Click
 }
@@ -43,7 +50,6 @@ export class MyButton extends MyContainer {
     private _params: MyBtnParams;
     protected _dummy: MyContainer;
     protected _img!: MyImage;
-    private _overDur = 200;
     private _tweenOver!: Phaser.Tweens.Tween;
     private _isOver = false;
     private _isDown = false;
@@ -74,7 +80,6 @@ export class MyButton extends MyContainer {
         const size = this._params.size;
         const sizeH = size.h ?? size.w;
         const pos = this._params.interactivePos ?? { x: 0, y: 0 };
-        // this.setSize(size.w, sizeH);
         this.setInteractive({
             hitArea: new Phaser.Geom.Rectangle(-size.w / 2 + pos.x, -sizeH / 2 + pos.y, size.w, sizeH),
             hitAreaCallback: Phaser.Geom.Rectangle.Contains,
@@ -90,7 +95,7 @@ export class MyButton extends MyContainer {
         this.scene.tweens.add({
             targets: this._dummy,
             scale: this._params.scale,
-            duration: 200,
+            duration: this._params.overDuration,
             ease: 'Circ.Out'
         });
 
@@ -101,9 +106,8 @@ export class MyButton extends MyContainer {
         this._tweenOver = this.scene.tweens.add({
             targets: this._dummy,
             scale: (this._params.scale ?? 1) * (this._params.hoverScaleFactor ?? 1.1),
-            duration: this._overDur,
+            duration: this._params.overDuration,
             ease: Phaser.Math.Easing.Back.Out
-            // ease: Phaser.Math.Easing.Sine.Out
         })
     }
 
@@ -112,7 +116,17 @@ export class MyButton extends MyContainer {
         this._tweenOver = this.scene.tweens.add({
             targets: this._dummy,
             scale: this._params.scale,
-            duration: this._overDur,
+            duration: this._params.overDuration,
+            ease: Phaser.Math.Easing.Sine.Out
+        })
+    }
+
+    private clickAnim() {
+        if (this._tweenOver) this._tweenOver.stop();
+        this._tweenOver = this.scene.tweens.add({
+            targets: this._dummy,
+            scale: (this._params.scale ?? 1) * (this._params.clickScaleFactor ?? 0.95),
+            duration: this._params.overDuration,
             ease: Phaser.Math.Easing.Sine.Out
         })
     }
@@ -132,7 +146,7 @@ export class MyButton extends MyContainer {
 
     private onPointerDown(_p: Phaser.Input.Pointer) {
         this._isDown = true;
-        if (this._params.clickScale) this.outAnim();
+        if (this._params.clickScale) this.clickAnim();
     }
 
     private onPointerUp(_p: Phaser.Input.Pointer) {
