@@ -1,6 +1,7 @@
-import { AudioAlias, AudioMng } from "@/audio/AudioMng";
+import { AudioMng } from "@/audio/AudioMng";
 import { MyContainer } from "./MyContainer";
 import { MyImage } from "./MyImage";
+import { AudioAlias } from "@/data/AudioData";
 
 export type MyBtnParams = {
     texture?: string,

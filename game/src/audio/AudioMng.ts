@@ -1,18 +1,5 @@
 import { MyMath } from "../utils/MyMath";
-
-export enum AudioAlias {
-    Click = "Click",
-}
-
-export type AudioLoadData = {
-    alias: AudioAlias;
-    file: string;
-    maxInstances?: number;
-};
-
-export const AUDIO_LOAD_DATA: ReadonlyArray<AudioLoadData> = [
-    { alias: AudioAlias.Click, file: "click.mp3", maxInstances: 1 },
-];
+import { AUDIO_LOAD_DATA } from "../data/AudioData";
 
 type ManagedSound = Phaser.Sound.BaseSound & {
     volume: number;

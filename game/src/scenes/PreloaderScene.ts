@@ -1,4 +1,4 @@
-import { AUDIO_LOAD_DATA } from "@/audio/AudioMng";
+import { AUDIO_LOAD_DATA } from "@/data/AudioData";
 import { Config } from "../data/Config";
 import { PreloaderBar } from "../gui/preloader/PreloaderBar";
 import { SceneNames } from "./SceneNames";
