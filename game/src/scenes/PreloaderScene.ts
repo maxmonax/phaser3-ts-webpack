@@ -1,19 +1,15 @@
 import { AUDIO_LOAD_DATA } from "@/data/AudioData";
 import { Config } from "../data/Config";
 import { PreloaderBar } from "../gui/preloader/PreloaderBar";
+import { BaseScene } from "./BaseScene";
 import { SceneNames } from "./SceneNames";
-    
-enum Texts {
-    Title = 'Loading complete',
-    Message = 'Click anywhere to start'
-}
 
 enum Styles {
     Color = '#ffffff',
     Font = 'Ubuntu'
 }
 
-export class PreloaderScene extends Phaser.Scene {
+export class PreloaderScene extends BaseScene {
     private _bar!: PreloaderBar;
 
     constructor() {
@@ -60,7 +56,7 @@ export class PreloaderScene extends Phaser.Scene {
         if (Config.PRELOADER.TAP_TO_START) {
 
             this.add.text(Config.GW_HALF, Config.GH_HALF - 100,
-                Texts.Title,
+                this.t('preloader_title'),
                 {
                     font: `90px ${Styles.Font}`,
                     color: Styles.Color
@@ -68,7 +64,7 @@ export class PreloaderScene extends Phaser.Scene {
                 .setOrigin(0.5);
 
             this.add.text(Config.GW_HALF, Config.GH_HALF + 20,
-                Texts.Message,
+                this.t('preloader_start'),
                 {
                     font: `50px ${Styles.Font}`,
                     color: Styles.Color
