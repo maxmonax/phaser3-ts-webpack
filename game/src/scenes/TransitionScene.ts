@@ -22,15 +22,17 @@ export class TransitionScene extends Phaser.Scene {
     private static readonly DEFAULT_COLOR = 0x111111;
     private static readonly DEFAULT_ALPHA = 1;
 
+    private static _isTransitioning = false;
+
     private _curtain!: Curtain;
-    private _isTransitioning = false;
 
     constructor() {
         super(SceneNames.TransitionScene);
     }
 
     static change(scene: Phaser.Scene, targetSceneKey: string, options: TransitionOptions = {}): void {
-        if (scene.scene.isActive(SceneNames.TransitionScene)) return;
+        if (TransitionScene._isTransitioning) return;
+        TransitionScene._isTransitioning = true;
 
         scene.scene.launch(SceneNames.TransitionScene, {
             ...options,
@@ -42,9 +44,6 @@ export class TransitionScene extends Phaser.Scene {
 
     public create(data: TransitionData): void {
         AudioMng.init(this);
-
-        if (this._isTransitioning) return;
-        this._isTransitioning = true;
 
         const duration = data.duration ?? TransitionScene.DEFAULT_DURATION;
         const alpha = data.alpha ?? TransitionScene.DEFAULT_ALPHA;
@@ -83,7 +82,7 @@ export class TransitionScene extends Phaser.Scene {
 
     private hideCurtain(data: TransitionData): void {
         this._curtain.hideCurtain(data.duration ?? TransitionScene.DEFAULT_DURATION, () => {
-            this._isTransitioning = false;
+            TransitionScene._isTransitioning = false;
             this.scene.stop();
         }, undefined, data.ease);
     }
