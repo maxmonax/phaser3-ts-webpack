@@ -78,21 +78,25 @@ export class LogMng {
                 css = 'background: #ADADAD; color: #fff; padding: 1px 4px';
         }
 
-        aData ?
-            console.log("%c%s", css, aLevel, aMsg, aData) :
-            console.log("%c%s", css, aLevel, aMsg);
+        if (__DEV__) {
+            aData ?
+                console.log("%c%s", css, aLevel, aMsg, aData) :
+                console.log("%c%s", css, aLevel, aMsg);
+        }
 
         return true;
 
     };
 
     public static system(aMsg: any, aLink: string = '') {
-        console.log("%c %c %c %s %c %c %c %c%s",
-            LogMng.getCSS('#5C6166'), LogMng.getCSS('#4F5357'),
-            LogMng.getCSS('#313335'), aMsg,
-            LogMng.getCSS('#4F5357'), LogMng.getCSS('#5C6166'),
-            LogMng.getLink('none'), LogMng.getLink('none'), aLink
-        );
+        if (__DEV__) {
+            console.log("%c %c %c %s %c %c %c %c%s",
+                LogMng.getCSS('#5C6166'), LogMng.getCSS('#4F5357'),
+                LogMng.getCSS('#313335'), aMsg,
+                LogMng.getCSS('#4F5357'), LogMng.getCSS('#5C6166'),
+                LogMng.getLink('none'), LogMng.getLink('none'), aLink
+            );
+        }
     }
 
     public static debug(aMsg: any, aData?: any): boolean {

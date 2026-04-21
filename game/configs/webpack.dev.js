@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 
@@ -10,6 +11,10 @@ module.exports = merge(common, {
     // dev mode
     mode: 'development',
     devtool: 'inline-source-map',
+
+    plugins: [
+        new webpack.DefinePlugin({ '__DEV__': JSON.stringify(true) }),
+    ],
 
     // dev server
     devServer: {

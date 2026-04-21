@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
@@ -31,6 +32,7 @@ module.exports = merge(common, {
     },
 
     plugins: [
+        new webpack.DefinePlugin({ '__DEV__': JSON.stringify(false) }),
         new MiniCssExtractPlugin({
             filename: 'css/main.css'
         })
