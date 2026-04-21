@@ -1,15 +1,16 @@
-import { UAParser } from 'ua-parser-js';
-
 export class DeviceInfo {
   private static instance: DeviceInfo | null = null;
-  private parserResult: UAParser.IResult;
-  // desktop or mobile
   private _desktop = false;
+  private _iOS = false;
+  private _android = false;
+  private _safari = false;
 
   private constructor() {
-    this.parserResult = new UAParser().getResult();
-    const devTypes = ['console', 'mobile', 'tablet', 'smarttv', 'wearable', 'embedded'];
-    this._desktop = devTypes.indexOf(this.parserResult.device.type ?? '') < 0;
+    const ua = navigator.userAgent;
+    this._iOS = /iPad|iPhone|iPod/.test(ua);
+    this._android = /Android/.test(ua);
+    this._safari = /Safari/.test(ua) && !/Chrome|Chromium/.test(ua);
+    this._desktop = !this._iOS && !this._android && !/Mobile|IEMobile|BlackBerry|Silk/.test(ua);
   }
 
   static getInstance(): DeviceInfo {
@@ -23,22 +24,16 @@ export class DeviceInfo {
     return this._desktop;
   }
 
-  /**
-   * is iOS?
-   */
   public get iOS(): boolean {
-    return this.parserResult.os.name == 'iOS';
+    return this._iOS;
   }
 
-  /**
-   * is Android
-   */
   public get android(): boolean {
-    return (this.parserResult.os.name ?? '').indexOf('Android') >= 0;
+    return this._android;
   }
 
   public get safari(): boolean {
-    return this.parserResult.browser.name == 'Safari';
+    return this._safari;
   }
 
   public get devicePixelRatio(): number {
