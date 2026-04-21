@@ -26,5 +26,9 @@ export class MyTextButton extends MyButton {
         this.add(this._caption);
     }
 
+    setText(text: string): this {
+        this._caption.setText(text);
+        return this;
+    }
 
 }

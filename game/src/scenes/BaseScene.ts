@@ -20,8 +20,8 @@ export abstract class BaseScene extends Phaser.Scene {
     }
 
     protected registerLangChange(cb: (lang: Lang) => void): void {
-        this._langCb = cb;
-        LocaleMng.getInstance().onLangChange(cb);
+        this._langCb = cb.bind(this);
+        LocaleMng.getInstance().onLangChange(this._langCb);
         this.events.once('shutdown', this.unregisterLangChange, this);
     }
 
