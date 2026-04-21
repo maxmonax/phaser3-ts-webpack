@@ -1,187 +1,182 @@
-import { AudioMng } from "@/audio/AudioMng";
-import { MyContainer } from "./MyContainer";
-import { MyImage } from "./MyImage";
-import { AudioAlias } from "@/data/AudioData";
+import { AudioMng } from '@/audio/AudioMng';
+import { MyContainer } from './MyContainer';
+import { MyImage } from './MyImage';
+import { AudioAlias } from '@/data/AudioData';
 
 export type ButtonAnimConfig = {
-    overDuration?: number;
-    hoverScaleFactor?: number;
-    clickScaleFactor?: number;
+  overDuration?: number;
+  hoverScaleFactor?: number;
+  clickScaleFactor?: number;
 };
 
 export type MyBtnParams = ButtonAnimConfig & {
-    texture?: string,
-    frame?: string,
-    frameOn?: string,
-    frameDisabled?: string,
-    size?: {
-        w: number,
-        h?: number
-    },
-    interactivePos?: {
-        x: integer,
-        y: integer,
-    },
-    scale?: number,
-    isHoverAnim?: boolean,
-    clickScale?: boolean,
-    audioClickAlias?: string,
-    onClick?: (btn: MyButton) => void,
-    context?: object
-}
+  texture?: string;
+  frame?: string;
+  frameOn?: string;
+  frameDisabled?: string;
+  size?: {
+    w: number;
+    h?: number;
+  };
+  interactivePos?: {
+    x: integer;
+    y: integer;
+  };
+  scale?: number;
+  isHoverAnim?: boolean;
+  clickScale?: boolean;
+  audioClickAlias?: string;
+  onClick?: (btn: MyButton) => void;
+  context?: object;
+};
 
 const DEFAULT: MyBtnParams = {
-    texture: '',
-    scale: 1,
-    isHoverAnim: true,
-    overDuration: 200,
-    hoverScaleFactor: 1.1,
-    clickScaleFactor: 0.95,
-    clickScale: true,
-    audioClickAlias: AudioAlias.Click
-}
+  texture: '',
+  scale: 1,
+  isHoverAnim: true,
+  overDuration: 200,
+  hoverScaleFactor: 1.1,
+  clickScaleFactor: 0.95,
+  clickScale: true,
+  audioClickAlias: AudioAlias.Click,
+};
 
 export enum MyBtnEvent {
-    Click = 'Click'
+  Click = 'Click',
 }
 
 export class MyButton extends MyContainer {
+  private _params: MyBtnParams;
+  protected _dummy: MyContainer;
+  protected _img!: MyImage;
+  private _tweenOver!: Phaser.Tweens.Tween;
+  private _isOver = false;
+  private _isDown = false;
+  private _disabled = false;
 
-    private _params: MyBtnParams;
-    protected _dummy: MyContainer;
-    protected _img!: MyImage;
-    private _tweenOver!: Phaser.Tweens.Tween;
-    private _isOver = false;
-    private _isDown = false;
-    private _disabled = false;
+  constructor(scene: Phaser.Scene, x: number, y: number, aParams: MyBtnParams) {
+    super(scene, x, y);
 
-    constructor(scene: Phaser.Scene, x: number, y: number, aParams: MyBtnParams) {
-        super(scene, x, y);
+    this._params = { ...DEFAULT, ...aParams };
 
-        this._params = { ...DEFAULT, ...aParams };
+    this._dummy = new MyContainer(scene, 0, 0);
+    this._dummy.scale = 0.01;
+    this.add(this._dummy);
 
-        this._dummy = new MyContainer(scene, 0, 0);
-        this._dummy.scale = .01;
-        this.add(this._dummy);
-
-        if (this._params.texture) {
-            this._img = new MyImage(scene, 0, 0, this._params.texture, this._params.frame);
-            this._dummy.add(this._img);
-        }
-
-        if (!this._params.size) {
-            const scale = this._params.scale ?? 1;
-            this._params.size = this._img
-                ? { w: this._img.width * scale, h: this._img.height * scale }
-                : { w: 0, h: 0 };
-        }
-        if (!this._params.size.h) this._params.size.h = this._params.size.w;
-
-        const size = this._params.size;
-        const sizeH = size.h ?? size.w;
-        const pos = this._params.interactivePos ?? { x: 0, y: 0 };
-        this.setInteractive({
-            hitArea: new Phaser.Geom.Rectangle(-size.w / 2 + pos.x, -sizeH / 2 + pos.y, size.w, sizeH),
-            hitAreaCallback: Phaser.Geom.Rectangle.Contains,
-            useHandCursor: true
-        });
-
-        this.on(Phaser.Input.Events.POINTER_OVER, this.onPointerOver, this);
-        this.on(Phaser.Input.Events.POINTER_OUT, this.onPointerOut, this);
-        this.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
-        this.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this);
-        this.on(MyBtnEvent.Click, this.onClick, this);
-
-        this.scene.tweens.add({
-            targets: this._dummy,
-            scale: this._params.scale,
-            duration: this._params.overDuration,
-            ease: 'Circ.Out'
-        });
-
+    if (this._params.texture) {
+      this._img = new MyImage(scene, 0, 0, this._params.texture, this._params.frame);
+      this._dummy.add(this._img);
     }
 
-    private overAnim() {
-        if (this._tweenOver) this._tweenOver.stop();
-        this._tweenOver = this.scene.tweens.add({
-            targets: this._dummy,
-            scale: (this._params.scale ?? 1) * (this._params.hoverScaleFactor ?? 1.1),
-            duration: this._params.overDuration,
-            ease: Phaser.Math.Easing.Back.Out
-        })
+    if (!this._params.size) {
+      const scale = this._params.scale ?? 1;
+      this._params.size = this._img
+        ? { w: this._img.width * scale, h: this._img.height * scale }
+        : { w: 0, h: 0 };
     }
+    if (!this._params.size.h) this._params.size.h = this._params.size.w;
 
-    private outAnim() {
-        if (this._tweenOver) this._tweenOver.stop();
-        this._tweenOver = this.scene.tweens.add({
-            targets: this._dummy,
-            scale: this._params.scale,
-            duration: this._params.overDuration,
-            ease: Phaser.Math.Easing.Sine.Out
-        })
+    const size = this._params.size;
+    const sizeH = size.h ?? size.w;
+    const pos = this._params.interactivePos ?? { x: 0, y: 0 };
+    this.setInteractive({
+      hitArea: new Phaser.Geom.Rectangle(-size.w / 2 + pos.x, -sizeH / 2 + pos.y, size.w, sizeH),
+      hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+      useHandCursor: true,
+    });
+
+    this.on(Phaser.Input.Events.POINTER_OVER, this.onPointerOver, this);
+    this.on(Phaser.Input.Events.POINTER_OUT, this.onPointerOut, this);
+    this.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
+    this.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this);
+    this.on(MyBtnEvent.Click, this.onClick, this);
+
+    this.scene.tweens.add({
+      targets: this._dummy,
+      scale: this._params.scale,
+      duration: this._params.overDuration,
+      ease: 'Circ.Out',
+    });
+  }
+
+  private overAnim() {
+    if (this._tweenOver) this._tweenOver.stop();
+    this._tweenOver = this.scene.tweens.add({
+      targets: this._dummy,
+      scale: (this._params.scale ?? 1) * (this._params.hoverScaleFactor ?? 1.1),
+      duration: this._params.overDuration,
+      ease: Phaser.Math.Easing.Back.Out,
+    });
+  }
+
+  private outAnim() {
+    if (this._tweenOver) this._tweenOver.stop();
+    this._tweenOver = this.scene.tweens.add({
+      targets: this._dummy,
+      scale: this._params.scale,
+      duration: this._params.overDuration,
+      ease: Phaser.Math.Easing.Sine.Out,
+    });
+  }
+
+  private clickAnim() {
+    if (this._tweenOver) this._tweenOver.stop();
+    this._tweenOver = this.scene.tweens.add({
+      targets: this._dummy,
+      scale: (this._params.scale ?? 1) * (this._params.clickScaleFactor ?? 0.95),
+      duration: this._params.overDuration,
+      ease: Phaser.Math.Easing.Sine.Out,
+    });
+  }
+
+  private onPointerOver() {
+    if (this._isOver) return;
+    this._isOver = true;
+    if (this._params.isHoverAnim) this.overAnim();
+  }
+
+  private onPointerOut() {
+    if (!this._isOver) return;
+    this._isOver = false;
+    this._isDown = false;
+    if (this._params.isHoverAnim) this.outAnim();
+  }
+
+  private onPointerDown(_p: Phaser.Input.Pointer) {
+    this._isDown = true;
+    if (this._params.clickScale) this.clickAnim();
+  }
+
+  private onPointerUp(_p: Phaser.Input.Pointer) {
+    if (!this._isDown) return;
+    this._isDown = false;
+    if (this._params.audioClickAlias) AudioMng.playSfx(this._params.audioClickAlias);
+    if (this._params.clickScale) this.overAnim();
+    this.emit(MyBtnEvent.Click, this);
+  }
+
+  private onClick() {
+    if (this._params.onClick) {
+      this._params.onClick.call(this._params.context, this);
     }
+  }
 
-    private clickAnim() {
-        if (this._tweenOver) this._tweenOver.stop();
-        this._tweenOver = this.scene.tweens.add({
-            targets: this._dummy,
-            scale: (this._params.scale ?? 1) * (this._params.clickScaleFactor ?? 0.95),
-            duration: this._params.overDuration,
-            ease: Phaser.Math.Easing.Sine.Out
-        })
+  public set disabled(v: boolean) {
+    this._disabled = v;
+    if (this._disabled) {
+      this.disableInteractive();
+    } else {
+      this.setInteractive();
     }
+  }
 
-    private onPointerOver() {
-        if (this._isOver) return;
-        this._isOver = true;
-        if (this._params.isHoverAnim) this.overAnim();
-    }
+  setClickListener(aCb: (btn: MyButton) => void, aCtx: object) {
+    this._params.onClick = aCb;
+    this._params.context = aCtx;
+  }
 
-    private onPointerOut() {
-        if (!this._isOver) return;
-        this._isOver = false;
-        this._isDown = false;
-        if (this._params.isHoverAnim) this.outAnim();
-    }
-
-    private onPointerDown(_p: Phaser.Input.Pointer) {
-        this._isDown = true;
-        if (this._params.clickScale) this.clickAnim();
-    }
-
-    private onPointerUp(_p: Phaser.Input.Pointer) {
-        if (!this._isDown) return;
-        this._isDown = false;
-        if (this._params.audioClickAlias) AudioMng.playSfx(this._params.audioClickAlias);
-        if (this._params.clickScale) this.overAnim();
-        this.emit(MyBtnEvent.Click, this);
-    }
-
-    private onClick() {
-        if (this._params.onClick) {
-            this._params.onClick.call(this._params.context, this);
-        }
-    }
-
-    public set disabled(v: boolean) {
-        this._disabled = v;
-        if (this._disabled) {
-            this.disableInteractive();
-        }
-        else {
-            this.setInteractive();
-        }
-    }
-
-    setClickListener(aCb: (btn: MyButton) => void, aCtx: object) {
-        this._params.onClick = aCb;
-        this._params.context = aCtx;
-    }
-
-    setNewScale(aScale: number) {
-        this._params.scale = aScale;
-        this._dummy.setScale(this._params.scale);
-    }
-
-
+  setNewScale(aScale: number) {
+    this._params.scale = aScale;
+    this._dummy.setScale(this._params.scale);
+  }
 }

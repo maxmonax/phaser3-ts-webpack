@@ -4,53 +4,49 @@ import { LogMng } from '../utils/LogMng';
 import { SceneNames } from './SceneNames';
 
 export class BootScene extends Phaser.Scene {
+  constructor() {
+    super(SceneNames.BootScene);
 
-    constructor() {
-        super(SceneNames.BootScene);
+    // init debug mode
+    Params.isDebugMode = window.location.hash === '#debug';
 
-        // init debug mode
-        Params.isDebugMode = window.location.hash === '#debug';
+    // LogMng settings
+    if (!Params.isDebugMode) LogMng.setMode(LogMng.MODE_RELEASE);
+    LogMng.system('log mode: ' + LogMng.getMode());
 
-        // LogMng settings
-        if (!Params.isDebugMode) LogMng.setMode(LogMng.MODE_RELEASE);
-        LogMng.system('log mode: ' + LogMng.getMode());
+    this.readGETParams();
+  }
 
-        this.readGETParams();
-    }
+  private readGETParams() {
+    const LIST = [
+      {
+        // test param
+        keys: ['testParam'],
+        onReadHandler: (aValue: string) => {
+          LogMng.debug(`GET key "testParam" = ${aValue}`);
+        },
+      },
+    ];
 
-    private readGETParams() {
-        
-        const LIST = [
-            {
-                // test param
-                keys: ['testParam'],
-                onReadHandler: (aValue: string) => {
-                    LogMng.debug(`GET key "testParam" = ${aValue}`);
-                }
-            }
-        ];
-
-        for (let i = 0; i < LIST.length; i++) {
-            const listItem = LIST[i];
-            const keys = listItem.keys;
-            for (let j = 0; j < keys.length; j++) {
-                const getName = keys[j];
-                let qValue = MyUtils.getQueryValue(getName);
-                if (qValue != null && qValue != undefined) {
-                    listItem.onReadHandler(Array.isArray(qValue) ? qValue[0] : qValue);
-                }
-            }
+    for (let i = 0; i < LIST.length; i++) {
+      const listItem = LIST[i];
+      const keys = listItem.keys;
+      for (let j = 0; j < keys.length; j++) {
+        const getName = keys[j];
+        const qValue = MyUtils.getQueryValue(getName);
+        if (qValue != null && qValue != undefined) {
+          listItem.onReadHandler(Array.isArray(qValue) ? qValue[0] : qValue);
         }
-        
+      }
     }
+  }
 
-    public preload(): void {
-        // load preloader atlas and res if u need
-        // this.load.atlas('preloader', './assets/atlases/preloader.png', './assets/atlases/preloader.json');
-    }
+  public preload(): void {
+    // load preloader atlas and res if u need
+    // this.load.atlas('preloader', './assets/atlases/preloader.png', './assets/atlases/preloader.json');
+  }
 
-    public create(): void {
-        this.scene.start(SceneNames.PreloaderScene);
-    }
-
+  public create(): void {
+    this.scene.start(SceneNames.PreloaderScene);
+  }
 }

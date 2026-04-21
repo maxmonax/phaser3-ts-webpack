@@ -1,4 +1,3 @@
-
 export interface IUpdated {
-    update(dt: number): void;
+  update(dt: number): void;
 }

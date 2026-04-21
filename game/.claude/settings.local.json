@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(cat .eslintrc*)",
+      "Bash(cat eslint.config*)",
+      "Bash(npx prettier *)",
+      "Bash(npm install *)"
     ]
   }
 }

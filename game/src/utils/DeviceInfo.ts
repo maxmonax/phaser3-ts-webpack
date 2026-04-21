@@ -1,49 +1,47 @@
-import { UAParser } from "ua-parser-js";
+import { UAParser } from 'ua-parser-js';
 
 export class DeviceInfo {
-    private static instance: DeviceInfo | null = null;
-    private parserResult: UAParser.IResult;
-    // desktop or mobile
-    private _desktop = false;
+  private static instance: DeviceInfo | null = null;
+  private parserResult: UAParser.IResult;
+  // desktop or mobile
+  private _desktop = false;
 
-    private constructor() {
-        this.parserResult = new UAParser().getResult();
-        const devTypes = ['console', 'mobile', 'tablet', 'smarttv', 'wearable', 'embedded'];
-        this._desktop = devTypes.indexOf(this.parserResult.device.type ?? '') < 0;
+  private constructor() {
+    this.parserResult = new UAParser().getResult();
+    const devTypes = ['console', 'mobile', 'tablet', 'smarttv', 'wearable', 'embedded'];
+    this._desktop = devTypes.indexOf(this.parserResult.device.type ?? '') < 0;
+  }
+
+  static getInstance(): DeviceInfo {
+    if (!DeviceInfo.instance) {
+      DeviceInfo.instance = new DeviceInfo();
     }
+    return DeviceInfo.instance;
+  }
 
-    static getInstance(): DeviceInfo {
-        if (!DeviceInfo.instance) {
-            DeviceInfo.instance = new DeviceInfo();
-        }
-        return DeviceInfo.instance;
-    }
+  public get desktop(): boolean {
+    return this._desktop;
+  }
 
-    public get desktop(): boolean {
-        return this._desktop;
-    }
+  /**
+   * is iOS?
+   */
+  public get iOS(): boolean {
+    return this.parserResult.os.name == 'iOS';
+  }
 
-    /**
-     * is iOS?
-     */
-    public get iOS(): boolean {
-        return this.parserResult.os.name == 'iOS';
-    }
+  /**
+   * is Android
+   */
+  public get android(): boolean {
+    return (this.parserResult.os.name ?? '').indexOf('Android') >= 0;
+  }
 
-    /**
-     * is Android
-     */
-    public get android(): boolean {
-        return (this.parserResult.os.name ?? '').indexOf('Android') >= 0;
-    }
+  public get safari(): boolean {
+    return this.parserResult.browser.name == 'Safari';
+  }
 
-    public get safari(): boolean {
-        return this.parserResult.browser.name == 'Safari';
-    }
-
-    public get devicePixelRatio(): number {
-        return window.devicePixelRatio || 1;
-    }
-
-
+  public get devicePixelRatio(): number {
+    return window.devicePixelRatio || 1;
+  }
 }
