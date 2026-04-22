@@ -20,4 +20,4 @@
     TAP_TO_START: true,
     DRAW_DEBUG_BORDER: false,
   },
-};
+} as const;

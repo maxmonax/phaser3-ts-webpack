@@ -1,4 +1,5 @@
 import type { YandexGames } from "YaSDK";
+import { DevParams } from "../data/DevParams";
 
 const INTERSTITIAL_COOLDOWN_MIN = 1.1;
 
@@ -11,6 +12,12 @@ export class YandexService {
   /** Call once at window.load — fires YaGames.init() in parallel with game start. */
   static init(): void {
     if (this._readyPromise) return;
+
+    if (DevParams.sdkError) {
+      this._readyPromise = Promise.resolve();
+      this._initFailed = true;
+      return;
+    }
 
     if (typeof YaGames === 'undefined') {
       this._readyPromise = Promise.resolve();
