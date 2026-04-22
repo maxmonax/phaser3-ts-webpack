@@ -63,6 +63,11 @@ export class PreloaderScene extends BaseScene {
 
     // Assets are loaded. Wait for SDK (may already be ready — resolves instantly).
     YandexService.waitReady().then(() => {
+      if (YandexService.initFailed) {
+        this.showSdkError();
+        return;
+      }
+
       if (this._bar) this._bar.progress = 1;
 
       if (Config.PRELOADER.TAP_TO_START) {
@@ -87,6 +92,18 @@ export class PreloaderScene extends BaseScene {
         this.startGame();
       }
     });
+  }
+
+  private showSdkError() {
+    if (this._bar) this._bar.setVisible(false);
+    this.add
+      .text(
+        Config.GW_HALF,
+        Config.GH_HALF,
+        'SDK initialization error.\nPlease refresh the page.',
+        { font: `48px ${Styles.Font}`, color: '#ff4444', align: 'center' }
+      )
+      .setOrigin(0.5);
   }
 
   private startGame() {

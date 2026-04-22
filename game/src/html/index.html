@@ -15,6 +15,19 @@
     <link type="image/png" sizes="96x96" rel="icon" href="./assets/icons/game-96.png">
     <title>Phaser 3 - Game Template</title>
     <script src="js/stats.min.js"></script>
+
+    <script>
+      document.addEventListener('touchstart', function(event) {
+        if (event.touches.length > 1) event.preventDefault();
+      }, { passive: false });
+      document.addEventListener('gesturestart', function(event) {
+        event.preventDefault();
+      });
+      document.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+      });
+    </script>
+
     <!-- Yandex Games SDK for Release -->
     <!-- <script src="/sdk.js"></script> -->
     <!-- Yandex Games SDK for Development -->
@@ -24,7 +37,7 @@
 <body>
     <!-- Font preLoading -->
     <div style="font-family:Ubuntu; position:absolute; left:-1000px; visibility:hidden;">Abc Абв 123.!</div>
-    <div id="game"></div>
+    <div id="game" class="noselect"></div>
     <div class="rotate-image-container">
       <img id="rotate__image" src="./assets/images/rotate-phone-icon-white.png" alt="Rotate device to landscape orientation">
     </div>
