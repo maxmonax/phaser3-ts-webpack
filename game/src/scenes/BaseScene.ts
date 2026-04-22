@@ -1,4 +1,5 @@
-import { FrontEvents } from '../events/FrontEvents';
+import { EventBus } from '../events/EventBus';
+import { FrontEvent } from '../events/FrontEvent';
 import { Lang, LocaleKey } from '../locale/LocaleKeys';
 import { LocaleMng, t } from '../locale/LocaleMng';
 
@@ -8,13 +9,13 @@ export abstract class BaseScene extends Phaser.Scene {
 
   protected registerResize(cb: () => void): void {
     this._resizeCb = cb;
-    FrontEvents.getInstance().addListener(FrontEvents.EVENT_WINDOW_RESIZE, cb, this);
+    EventBus.addListener(FrontEvent.WINDOW_RESIZE, cb, this);
     this.events.once('shutdown', this.unregisterResize, this);
   }
 
   protected unregisterResize(): void {
     if (!this._resizeCb) return;
-    FrontEvents.getInstance().removeListener(FrontEvents.EVENT_WINDOW_RESIZE, this._resizeCb, this);
+    EventBus.removeListener(FrontEvent.WINDOW_RESIZE, this._resizeCb, this);
     this._resizeCb = null;
   }
 

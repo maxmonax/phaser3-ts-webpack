@@ -7,7 +7,8 @@ import { GameScene } from './scenes/GameScene';
 import { PreloaderScene } from './scenes/PreloaderScene';
 import { MenuScene } from './scenes/MenuScene';
 import { TransitionScene } from './scenes/TransitionScene';
-import { FrontEvents } from './events/FrontEvents';
+import { EventBus } from './events/EventBus';
+import { FrontEvent } from './events/FrontEvent';
 import { OrientationAlert } from './scaling/OrientationAlert';
 // for spine (uncomment if needed, add spine.d.ts for types):
 // import "phaser/plugins/spine/dist/SpinePlugin";
@@ -50,7 +51,7 @@ window.addEventListener(
       OrientationAlert.checkOrientation();
     }
     windowResizeCalculate();
-    FrontEvents.getInstance().emit(FrontEvents.EVENT_WINDOW_RESIZE);
+    EventBus.emit(FrontEvent.WINDOW_RESIZE);
   },
   false
 );
