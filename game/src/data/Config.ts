@@ -1,18 +1,21 @@
-﻿export const Config = {
+﻿const GW = 2400;
+const GH = 1080;
+const GW_SAFE = 1440;
+const GH_SAFE = 1080;
+
+export const Config = {
   // 20:9
-  GW: 2400,
-  GH: 1080,
-
-  GW_HALF: 2400 / 2,
-  GH_HALF: 1080 / 2,
-
-  GW_SAFE: 1440,
-  GH_SAFE: 1080,
+  GW,
+  GH,
+  GW_HALF: GW / 2,
+  GH_HALF: GH / 2,
+  GW_SAFE,
+  GH_SAFE,
 
   ORIENTATION: {
     check: true,
     inLandscape: true,
-    ar: 1440 / 1080,
+    ar: GW_SAFE / GH_SAFE,
   },
 
   PRELOADER: {
