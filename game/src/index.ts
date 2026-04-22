@@ -11,6 +11,7 @@ import { EventBus } from './events/EventBus';
 import { FrontEvent } from './events/FrontEvent';
 import { ShellBridge } from './events/ShellBridge';
 import { OrientationAlert } from './scaling/OrientationAlert';
+import { YandexService } from './services/YandexService';
 // for spine (uncomment if needed, add spine.d.ts for types):
 // import "phaser/plugins/spine/dist/SpinePlugin";
 // import { SpineFile } from 'phaser/types/SpineFile';
@@ -73,6 +74,7 @@ window.addEventListener(
       OrientationAlert.checkOrientation(true);
     }
     ShellBridge.init();
+    YandexService.init();
     windowResizeCalculate();
     startGame({ parent: gameContainer });
   },
