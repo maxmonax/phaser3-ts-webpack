@@ -28,7 +28,7 @@ game/
 │   ├── audio/           # Audio manager
 │   ├── locale/          # i18n (en / ru)
 │   ├── scaling/         # Orientation alert for mobile
-│   ├── events/          # Event bus
+│   ├── events/          # Event bus and bridge
 │   ├── utils/           # Math, color, easing, FSM, logging helpers
 │   ├── data/            # Config, params, audio data
 │   ├── interfaces/      # Shared TypeScript interfaces

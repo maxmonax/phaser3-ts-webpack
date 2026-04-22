@@ -9,6 +9,7 @@ import { MenuScene } from './scenes/MenuScene';
 import { TransitionScene } from './scenes/TransitionScene';
 import { EventBus } from './events/EventBus';
 import { FrontEvent } from './events/FrontEvent';
+import { ShellBridge } from './events/ShellBridge';
 import { OrientationAlert } from './scaling/OrientationAlert';
 // for spine (uncomment if needed, add spine.d.ts for types):
 // import "phaser/plugins/spine/dist/SpinePlugin";
@@ -71,6 +72,7 @@ window.addEventListener(
       OrientationAlert.initOrientation();
       OrientationAlert.checkOrientation(true);
     }
+    ShellBridge.init();
     windowResizeCalculate();
     startGame({ parent: gameContainer });
   },
