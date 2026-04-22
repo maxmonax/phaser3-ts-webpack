@@ -7,6 +7,7 @@
         "dev": "webpack serve --config configs/webpack.dev.js",
         "dev:open": "webpack serve --config configs/webpack.dev.js --open",
         "build:prod": "webpack --config configs/webpack.prod.js --progress",
+        "build:analyze": "webpack --config configs/webpack.prod.js --env analyze --progress",
         "type-check": "tsc --noEmit",
         "format": "prettier --write \"src/**/*.ts\"",
         "lint": "eslint src --ext .ts",
@@ -36,6 +37,7 @@
         "tsconfig-paths-webpack-plugin": "^4.1.0",
         "typescript": "^5.9.3",
         "webpack": "^5.88.2",
+        "webpack-bundle-analyzer": "^5.3.0",
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^4.15.1",
         "webpack-merge": "^5.9.0"
